@@ -1,0 +1,4 @@
+wwwroot/lib/** linguist-vendored
+wwwroot/css/** linguist-vendored
+wwwroot/js/site.js linguist-vendored
+Data/Migrations/** linguist-generated
