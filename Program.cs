@@ -13,7 +13,7 @@ builder.WebHost.ConfigureKestrel(o => o.AddServerHeader = false);
 
 // ── Database ──────────────────────────────────────────────────────────────
 var connectionString =
-    Environment.GetEnvironmentVariable("DATABASE_URL")
+    Environment.GetEnvironmentVariable("DB_CONNECTION_STRING")
     ?? builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<TravelAIDbContext>(options =>
     options.UseNpgsql(connectionString));
