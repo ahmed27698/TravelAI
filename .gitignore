@@ -1,0 +1,19 @@
+## .NET
+bin/
+obj/
+*.user
+*.suo
+.vs/
+*.rsuser
+
+## Secrets
+appsettings.Development.json
+*.pfx
+
+## Logs
+logs/
+*.log
+
+## OS
+.DS_Store
+Thumbs.db

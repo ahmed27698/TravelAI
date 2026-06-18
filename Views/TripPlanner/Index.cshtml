@@ -1,0 +1,136 @@
+@{
+    ViewData["Title"] = "AI Trip Planner";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="pt-24 pb-16 min-h-screen" style="background: radial-gradient(ellipse 80% 50% at 50% -5%, rgba(124,58,237,0.18) 0%, transparent 65%), #030712;">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <!-- Header -->
+        <div class="text-center mb-12 reveal-up">
+            <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-500/30">
+                <i class="fa-solid fa-wand-magic-sparkles text-2xl text-white"></i>
+            </div>
+            <div class="section-badge mx-auto w-fit mb-3"><i class="fa-solid fa-robot"></i> <span data-i18n="planner.badge">AI Powered</span></div>
+            <h1 class="section-title"><span data-i18n="planner.title1">Plan Your</span> <span class="gradient-text" data-i18n="planner.title2">Perfect Trip</span></h1>
+            <p class="text-gray-400 mt-3 max-w-xl mx-auto" data-i18n="planner.subtitle">Tell us your preferences and our AI will craft a personalised day-by-day itinerary in seconds.</p>
+        </div>
+
+        <!-- Planner Form -->
+        <div class="glass-card p-8 mb-8 reveal-up">
+            <form id="planner-form" novalidate>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <!-- Destination -->
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-300 mb-1.5" data-i18n="planner.dest">
+                            <i class="fa-solid fa-location-dot text-blue-400 mr-1"></i> Destination
+                        </label>
+                        <input id="plan-dest" type="text" class="search-input" placeholder="e.g. Tokyo, Egypt, Paris..." data-i18n-placeholder="planner.dest_ph" required />
+                    </div>
+
+                    <!-- Budget -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1.5" data-i18n="planner.budget">
+                            <i class="fa-solid fa-wallet text-blue-400 mr-1"></i> Total Budget (USD)
+                        </label>
+                        <input id="plan-budget" type="number" class="search-input" placeholder="e.g. 2000" min="100" required />
+                    </div>
+
+                    <!-- Days -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1.5" data-i18n="planner.days">
+                            <i class="fa-solid fa-calendar-days text-blue-400 mr-1"></i> Number of Days
+                        </label>
+                        <input id="plan-days" type="number" class="search-input" placeholder="e.g. 7" min="1" max="30" required />
+                    </div>
+
+                    <!-- Travel Style -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1.5" data-i18n="planner.style">
+                            <i class="fa-solid fa-compass text-blue-400 mr-1"></i> Travel Style
+                        </label>
+                        <select id="plan-style" class="search-input">
+                            <option value="adventure" data-i18n="planner.style_adventure">Adventure & Outdoors</option>
+                            <option value="cultural" selected data-i18n="planner.style_cultural">Cultural & History</option>
+                            <option value="luxury" data-i18n="planner.style_luxury">Luxury & Relaxation</option>
+                            <option value="food" data-i18n="planner.style_food">Food & Culinary</option>
+                            <option value="family" data-i18n="planner.style_family">Family Friendly</option>
+                            <option value="budget" data-i18n="planner.style_budget">Budget Backpacker</option>
+                        </select>
+                    </div>
+
+                    <!-- People -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1.5" data-i18n="planner.people">
+                            <i class="fa-solid fa-users text-blue-400 mr-1"></i> Number of Travellers
+                        </label>
+                        <select id="plan-people" class="search-input">
+                            <option value="1">Solo (1)</option>
+                            <option value="2" selected>Couple (2)</option>
+                            <option value="3">Small Group (3–4)</option>
+                            <option value="5">Group (5+)</option>
+                            <option value="family">Family with Kids</option>
+                        </select>
+                    </div>
+
+                    <!-- Interests -->
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-300 mb-2" data-i18n="planner.interests">
+                            <i class="fa-solid fa-heart text-blue-400 mr-1"></i> Interests (select all that apply)
+                        </label>
+                        <div class="flex flex-wrap gap-2" id="interests-grid">
+                            @{
+                                var interests = new[] {
+                                    ("fa-landmark", "Museums"), ("fa-utensils", "Food & Dining"),
+                                    ("fa-person-hiking", "Hiking"), ("fa-water", "Beaches"),
+                                    ("fa-masks-theater", "Nightlife"), ("fa-camera", "Photography"),
+                                    ("fa-spa", "Wellness"), ("fa-shopping-bag", "Shopping"),
+                                    ("fa-tree", "Nature"), ("fa-palette", "Art & Culture")
+                                };
+                            }
+                            @foreach (var (icon, label) in interests)
+                            {
+                                <button type="button" class="interest-tag flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-white/10 text-gray-400 text-sm font-medium transition-all hover:border-blue-500/50 hover:text-blue-300"
+                                        onclick="this.classList.toggle('selected'); this.classList.toggle('border-blue-500'); this.classList.toggle('text-blue-300'); this.classList.toggle('bg-blue-500/10');">
+                                    <i class="fa-solid @icon text-xs"></i> @label
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary w-full py-4 text-base justify-center">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <span data-i18n="planner.generate">Generate My AI Itinerary</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- Result (populated by JS) -->
+        <div id="planner-result" style="display:none;"></div>
+
+        <!-- Tips -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8 reveal-up">
+            @{
+                var tips = new[]
+                {
+                    ("fa-bolt", "#f59e0b", "Instant Results", "Get a full itinerary in under 3 seconds — no waiting."),
+                    ("fa-sliders", "#3b82f6", "Fully Customisable", "Adjust any day, swap activities, or regenerate sections."),
+                    ("fa-file-pdf", "#10b981", "Export to PDF", "Download your trip plan to take offline — Premium feature."),
+                };
+            }
+            @foreach (var (icon, color, title, desc) in tips)
+            {
+                <div class="glass-card p-4 flex items-start gap-3">
+                    <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style="background:@(color)22">
+                        <i class="fa-solid @icon text-sm" style="color:@color"></i>
+                    </div>
+                    <div>
+                        <p class="text-white font-semibold text-sm">@title</p>
+                        <p class="text-gray-500 text-xs mt-0.5 leading-relaxed">@desc</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,25 @@
+@* Native browser validation — no jQuery dependency *@
+<script>
+(function(){
+    document.querySelectorAll('form[data-val="true"], form').forEach(form => {
+        form.addEventListener('submit', e => {
+            const inputs = form.querySelectorAll('[required]');
+            let valid = true;
+            inputs.forEach(input => {
+                if (!input.value.trim()) {
+                    input.classList.add('input-validation-error');
+                    valid = false;
+                } else {
+                    input.classList.remove('input-validation-error');
+                }
+            });
+            if (!valid) e.preventDefault();
+        });
+        form.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', () => {
+                if (input.value.trim()) input.classList.remove('input-validation-error');
+            });
+        });
+    });
+})();
+</script>

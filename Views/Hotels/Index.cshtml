@@ -1,0 +1,81 @@
+@model List<TravelAI.Models.Hotel>
+@{
+    ViewData["Title"] = "Hotels";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var countries = ViewBag.Countries as List<TravelAI.Models.Country> ?? new();
+}
+
+<div class="pt-24 pb-16 min-h-screen">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-10">
+            <div class="section-badge"><i class="fa-solid fa-hotel"></i> <span data-i18n="hotels.badge">Accommodations</span></div>
+            <h1 class="section-title mt-3"><span data-i18n="hotels.title1">Find Your</span> <span class="gradient-text" data-i18n="hotels.title2">Perfect Hotel</span></h1>
+        </div>
+
+        <!-- Filters -->
+        <form method="get" class="glass-card p-6 mb-10">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
+                    <input type="text" name="search" value="@Context.Request.Query["search"]" class="search-input pl-9" placeholder="City or hotel name..." data-i18n-placeholder="hotels.city_ph" />
+                </div>
+                <select name="countryId" class="search-input">
+                    <option value="" data-i18n="hotels.all_countries">All Countries</option>
+                    @foreach (var c in countries)
+                    {
+                        <option value="@c.Id" selected="@(Context.Request.Query["countryId"] == c.Id.ToString() ? "selected" : null)">@c.Name</option>
+                    }
+                </select>
+                <div class="relative">
+                    <i class="fa-solid fa-wallet absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
+                    <input type="number" name="maxPrice" value="@Context.Request.Query["maxPrice"]" class="search-input pl-9" placeholder="Max price / night" data-i18n-placeholder="hotels.max_price" />
+                </div>
+                <button type="submit" class="btn-primary justify-center py-2.5">
+                    <i class="fa-solid fa-magnifying-glass"></i> <span data-i18n="hotels.search">Search</span>
+                </button>
+            </div>
+        </form>
+
+        @if (!Model.Any())
+        {
+            <div class="text-center py-24">
+                <i class="fa-solid fa-hotel text-6xl text-gray-700 mb-6 block"></i>
+                <p class="text-gray-400 text-lg" data-i18n="hotels.no_results">No hotels found. Try adjusting your filters.</p>
+            </div>
+        }
+        else
+        {
+            <p class="text-gray-500 text-sm mb-6" data-i18n="hotels.found">@Model.Count hotel(s) found</p>
+            <div class="stagger-cards grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                @foreach (var hotel in Model)
+                {
+                    <a asp-action="Details" asp-route-id="@hotel.Id" class="stagger-card hotel-card block">
+                        <div class="relative overflow-hidden">
+                            <img src="@hotel.ImageUrl" alt="@hotel.Name" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800'" />
+                            @if (hotel.IsFeatured) { <span class="badge-featured absolute top-3 left-3">Featured</span> }
+                            <div class="absolute top-3 right-3 bg-black/50 backdrop-blur-sm rounded-lg px-2 py-1 flex items-center gap-1">
+                                <i class="fa-solid fa-star text-amber-400 text-xs"></i>
+                                <span class="text-white text-xs font-semibold">@hotel.Rating</span>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <h3 class="text-white font-bold">@hotel.Name</h3>
+                            <p class="text-gray-500 text-sm mt-1 flex items-center gap-1">
+                                <i class="fa-solid fa-location-dot text-xs"></i>
+                                @hotel.City@(hotel.Country != null ? ", " + hotel.Country.Name : "")
+                            </p>
+                            <div class="flex items-center justify-between mt-3">
+                                <span class="text-blue-400 font-black text-xl">$@hotel.PricePerNight<span class="text-gray-500 text-xs font-normal ml-1">/night</span></span>
+                                <div class="flex gap-2 text-gray-500 text-sm">
+                                    @if (hotel.HasWifi) { <i class="fa-solid fa-wifi" title="WiFi"></i> }
+                                    @if (hotel.HasPool) { <i class="fa-solid fa-water-ladder" title="Pool"></i> }
+                                    @if (hotel.HasSpa) { <i class="fa-solid fa-spa" title="Spa"></i> }
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                }
+            </div>
+        }
+    </div>
+</div>

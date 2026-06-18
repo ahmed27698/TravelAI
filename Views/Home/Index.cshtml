@@ -1,0 +1,524 @@
+@model TravelAI.Models.ViewModels.HomeViewModel
+@{
+    ViewData["Title"] = "TravelAI - Smart AI Travel Platform";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- ═══ HERO SECTION ═══ -->
+<section class="hero-section" id="hero">
+    <div class="hero-particles" id="hero-particles"></div>
+
+    <!-- Glow Orbs -->
+    <div class="glow-orb" style="width:600px;height:600px;background:#2563eb;top:-200px;right:-100px;"></div>
+    <div class="glow-orb" style="width:400px;height:400px;background:#7c3aed;bottom:-100px;left:-100px;"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pt-24 pb-16 relative z-10">
+        <div class="max-w-4xl mx-auto text-center mb-12">
+            <div class="section-badge hero-badge">
+                <i class="fa-solid fa-sparkles"></i>
+                <span data-i18n="hero.badge">AI-Powered Travel Planning</span>
+            </div>
+            <h1 class="hero-title text-5xl sm:text-6xl lg:text-7xl font-black text-white leading-tight mt-4 mb-6">
+                <span data-i18n="hero.title1">Explore The World</span><br/>
+                <span class="gradient-text" data-i18n="hero.title2">With AI Intelligence</span>
+            </h1>
+            <p class="hero-subtitle text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed" data-i18n="hero.subtitle">
+                Discover destinations, book flights and hotels, and let our AI craft the perfect itinerary tailored just for you.
+            </p>
+        </div>
+
+        <!-- Search Box -->
+        <div class="hero-search search-glass max-w-3xl mx-auto mb-20">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div class="relative">
+                    <i class="fa-solid fa-location-dot absolute left-3 top-1/2 -translate-y-1/2 text-blue-400"></i>
+                    <input id="hero-dest" type="text" class="search-input pl-9" placeholder="Where do you want to go?" data-i18n-placeholder="hero.dest_placeholder" autocomplete="off" />
+                </div>
+                <div class="relative">
+                    <i class="fa-solid fa-wallet absolute left-3 top-1/2 -translate-y-1/2 text-blue-400"></i>
+                    <input id="hero-budget" type="number" class="search-input pl-9" placeholder="Budget (USD)" data-i18n-placeholder="hero.budget_placeholder" min="0" />
+                </div>
+                <div class="relative">
+                    <i class="fa-solid fa-calendar-days absolute left-3 top-1/2 -translate-y-1/2 text-blue-400"></i>
+                    <input id="hero-days" type="number" class="search-input pl-9" placeholder="Number of days" data-i18n-placeholder="hero.days_placeholder" min="1" />
+                </div>
+            </div>
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <a asp-controller="TripPlanner" asp-action="Index" id="hero-search-btn" class="btn-primary w-full py-3.5 text-base rounded-xl justify-center flex">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <span data-i18n="hero.cta">Plan My Trip with AI</span>
+                </a>
+            }
+            else
+            {
+                <button id="hero-search-btn" class="btn-primary w-full py-3.5 text-base rounded-xl justify-center">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <span data-i18n="hero.cta">Plan My Trip with AI</span>
+                </button>
+            }
+        </div>
+
+        <!-- Stats -->
+        <div class="hero-stats flex flex-wrap justify-center gap-8 md:gap-16">
+            <div class="text-center">
+                <div class="stat-number count-up" data-target="195" data-suffix="+">0</div>
+                <p class="text-gray-500 text-sm mt-1" data-i18n="hero.stat_countries">Countries</p>
+            </div>
+            <div class="text-center">
+                <div class="stat-number count-up" data-target="50000" data-suffix="+">0</div>
+                <p class="text-gray-500 text-sm mt-1" data-i18n="hero.stat_hotels">Hotels</p>
+            </div>
+            <div class="text-center">
+                <div class="stat-number count-up" data-target="2000000" data-suffix="+">0</div>
+                <p class="text-gray-500 text-sm mt-1" data-i18n="hero.stat_travelers">Happy Travelers</p>
+            </div>
+            <div class="text-center">
+                <div class="stat-number count-up" data-target="98" data-suffix="%">0</div>
+                <p class="text-gray-500 text-sm mt-1" data-i18n="hero.stat_satisfaction">Satisfaction Rate</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-gray-600 animate-bounce">
+        <i class="fa-solid fa-chevron-down text-sm"></i>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══ COUNTRIES SECTION ═══ -->
+<section class="section" id="countries">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12 reveal-up">
+            <div class="section-badge"><i class="fa-solid fa-earth-americas"></i> <span data-i18n="sec.countries.badge">Destinations</span></div>
+            <h2 class="section-title mt-3"><span data-i18n="sec.countries.title1">Popular</span> <span class="gradient-text" data-i18n="sec.countries.title2">Countries</span></h2>
+            <p class="text-gray-400 mt-3 max-w-xl mx-auto" data-i18n="sec.countries.subtitle">From ancient wonders to modern marvels, explore the world's most breathtaking destinations.</p>
+        </div>
+
+        <div class="stagger-cards grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            @foreach (var country in Model.FeaturedCountries)
+            {
+                <a asp-controller="Countries" asp-action="Details" asp-route-id="@country.Id" class="stagger-card country-card block group">
+                    <img src="@country.ImageUrl" alt="@country.Name" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800'" />
+                    <div class="country-card-overlay">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-white font-bold text-lg leading-tight">@country.Name</h3>
+                                <p class="text-blue-200 text-sm">@country.Continent</p>
+                            </div>
+                            <span class="text-xs font-semibold text-amber-300 bg-amber-500/20 px-2 py-1 rounded-lg">
+                                $@((int)country.AverageBudgetPerDay)/day
+                            </span>
+                        </div>
+                    </div>
+                </a>
+            }
+        </div>
+
+        <div class="text-center mt-10 reveal-up">
+            <a asp-controller="Countries" asp-action="Index" class="btn-outline px-8 py-3">
+                <span data-i18n="sec.countries.cta">View All Countries</span> <i class="fa-solid fa-arrow-right ml-2"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══ FLIGHTS SECTION ═══ -->
+<section class="section" id="flights">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
+            <div class="reveal-left">
+                <div class="section-badge"><i class="fa-solid fa-plane-departure"></i> <span data-i18n="sec.flights.badge">Flights</span></div>
+                <h2 class="section-title mt-3"><span data-i18n="sec.flights.title1">Top</span> <span class="gradient-text" data-i18n="sec.flights.title2">Flight Deals</span></h2>
+                <p class="text-gray-400 mt-2" data-i18n="sec.flights.subtitle">Discover the best fares on popular routes worldwide.</p>
+            </div>
+            <a asp-controller="Flights" asp-action="Index" class="btn-outline px-6 py-2.5 self-start reveal-right">
+                <span data-i18n="sec.flights.cta">View All Flights</span> <i class="fa-solid fa-arrow-right ml-2"></i>
+            </a>
+        </div>
+
+        <div class="stagger-cards grid grid-cols-1 md:grid-cols-2 gap-4">
+            @foreach (var flight in Model.FeaturedFlights)
+            {
+                <a asp-controller="Flights" asp-action="Details" asp-route-id="@flight.Id" class="stagger-card flight-card group block">
+                    <div class="flight-route">
+                        <div class="text-center">
+                            <p class="text-2xl font-black text-white">@flight.OriginCode</p>
+                            <p class="text-xs text-gray-500 mt-1">@flight.Origin</p>
+                        </div>
+                        <div class="flight-line flex-1">
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="bg-gray-950 px-2">
+                                    <i class="fa-solid fa-plane text-blue-500 text-sm rotate-90 md:rotate-0"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-2xl font-black text-white">@flight.DestinationCode</p>
+                            <p class="text-xs text-gray-500 mt-1">@flight.Destination</p>
+                        </div>
+                    </div>
+                    <div class="text-right flex-shrink-0">
+                        <div class="text-2xl font-black text-blue-400">$@flight.Price</div>
+                        <div class="text-xs text-gray-500 mt-1">@flight.Class</div>
+                        @if (flight.IsDirectFlight)
+                        {
+                            <span class="badge-direct inline-block mt-1">Direct</span>
+                        }
+                    </div>
+                </a>
+            }
+        </div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══ HOTELS SECTION ═══ -->
+<section class="section" id="hotels">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12 reveal-up">
+            <div class="section-badge"><i class="fa-solid fa-hotel"></i> <span data-i18n="sec.hotels.badge">Accommodations</span></div>
+            <h2 class="section-title mt-3"><span data-i18n="sec.hotels.title1">Luxury</span> <span class="gradient-text" data-i18n="sec.hotels.title2">Hotels</span></h2>
+            <p class="text-gray-400 mt-3 max-w-xl mx-auto" data-i18n="sec.hotels.subtitle">Hand-picked 5-star properties for an unforgettable stay.</p>
+        </div>
+
+        <div class="stagger-cards grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            @foreach (var hotel in Model.FeaturedHotels)
+            {
+                <a asp-controller="Hotels" asp-action="Details" asp-route-id="@hotel.Id" class="stagger-card hotel-card block">
+                    <div class="relative overflow-hidden">
+                        <img src="@hotel.ImageUrl" alt="@hotel.Name" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800'" />
+                        @if (hotel.IsFeatured)
+                        {
+                            <span class="badge-featured absolute top-3 left-3">Featured</span>
+                        }
+                        <div class="absolute top-3 right-3 bg-black/50 backdrop-blur-sm rounded-lg px-2 py-1 flex items-center gap-1">
+                            <i class="fa-solid fa-star text-amber-400 text-xs"></i>
+                            <span class="text-white text-xs font-semibold">@hotel.Rating</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-white font-bold text-base">@hotel.Name</h3>
+                        <p class="text-gray-500 text-sm mt-1 flex items-center gap-1">
+                            <i class="fa-solid fa-location-dot text-xs"></i>
+                            @hotel.City@(hotel.Country != null ? ", " + hotel.Country.Name : "")
+                        </p>
+                        <div class="flex items-center justify-between mt-3">
+                            <div>
+                                <span class="text-blue-400 font-black text-xl">$@hotel.PricePerNight</span>
+                                <span class="text-gray-500 text-xs ml-1" data-i18n="hotel.per_night">/ night</span>
+                            </div>
+                            <div class="flex gap-2 text-gray-600 text-xs">
+                                @if (hotel.HasWifi) { <i class="fa-solid fa-wifi" title="WiFi"></i> }
+                                @if (hotel.HasPool) { <i class="fa-solid fa-water-ladder" title="Pool"></i> }
+                                @if (hotel.HasSpa) { <i class="fa-solid fa-spa" title="Spa"></i> }
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            }
+        </div>
+
+        <div class="text-center mt-10 reveal-up">
+            <a asp-controller="Hotels" asp-action="Index" class="btn-outline px-8 py-3">
+                <span data-i18n="sec.hotels.cta">Browse All Hotels</span> <i class="fa-solid fa-arrow-right ml-2"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══ ACTIVITIES SECTION ═══ -->
+<section class="section" id="activities">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12 reveal-up">
+            <div class="section-badge"><i class="fa-solid fa-compass"></i> <span data-i18n="sec.activities.badge">Experiences</span></div>
+            <h2 class="section-title mt-3"><span data-i18n="sec.activities.title1">Top</span> <span class="gradient-text" data-i18n="sec.activities.title2">Activities</span></h2>
+            <p class="text-gray-400 mt-3 max-w-xl mx-auto" data-i18n="sec.activities.subtitle">From thrilling adventures to cultural experiences, find your perfect activity.</p>
+        </div>
+
+        <!-- Category Filter -->
+        <div class="flex flex-wrap gap-3 justify-center mb-8 reveal-up">
+            @{
+                var categories = new[] { ("All", "fa-list"), ("Adventure", "fa-mountain-sun"), ("Museums", "fa-landmark"), ("Food", "fa-utensils"), ("Cultural", "fa-masks-theater") };
+            }
+            @foreach (var (cat, icon) in categories)
+            {
+                <button class="flex items-center gap-2 px-4 py-2 rounded-xl border border-white/10 text-gray-400 hover:border-blue-500/50 hover:text-blue-400 transition-all text-sm font-medium">
+                    <i class="fa-solid @icon text-xs"></i> @cat
+                </button>
+            }
+        </div>
+
+        <div class="stagger-cards grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            @foreach (var activity in Model.FeaturedActivities)
+            {
+                <a asp-controller="Activities" asp-action="Details" asp-route-id="@activity.Id" class="stagger-card activity-card block">
+                    <div class="relative overflow-hidden">
+                        <img src="@activity.ImageUrl" alt="@activity.Name" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800'" />
+                        <div class="absolute top-3 left-3">
+                            <span class="cat-badge"><i class="fa-solid fa-tag text-xs"></i> @activity.Category</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-white font-bold text-base">@activity.Name</h3>
+                        <p class="text-gray-500 text-sm mt-1 flex items-center gap-1">
+                            <i class="fa-solid fa-location-dot text-xs"></i> @activity.City
+                            <span class="ml-auto flex items-center gap-1">
+                                <i class="fa-solid fa-star text-amber-400 text-xs"></i>
+                                <span class="text-gray-300 text-xs font-medium">@activity.Rating</span>
+                            </span>
+                        </p>
+                        <div class="flex items-center justify-between mt-3">
+                            <div>
+                                <span class="text-blue-400 font-black text-xl">$@activity.Price</span>
+                                <span class="text-gray-500 text-xs ml-1" data-i18n="activity.per_person">per person</span>
+                            </div>
+                            <span class="text-gray-500 text-xs flex items-center gap-1">
+                                <i class="fa-regular fa-clock"></i> @activity.DurationHours hrs
+                            </span>
+                        </div>
+                    </div>
+                </a>
+            }
+        </div>
+
+        <div class="text-center mt-10 reveal-up">
+            <a asp-controller="Activities" asp-action="Index" class="btn-outline px-8 py-3">
+                <span data-i18n="sec.activities.cta">Explore All Activities</span> <i class="fa-solid fa-arrow-right ml-2"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══ TRANSPORTATION SECTION ═══ -->
+<section class="section" id="transport">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12 reveal-up">
+            <div class="section-badge"><i class="fa-solid fa-car-side"></i> <span data-i18n="sec.transport.badge">Transportation</span></div>
+            <h2 class="section-title mt-3"><span data-i18n="sec.transport.title1">Get Around</span> <span class="gradient-text" data-i18n="sec.transport.title2">Anywhere</span></h2>
+            <p class="text-gray-400 mt-3 max-w-xl mx-auto" data-i18n="sec.transport.subtitle">Every transport option you need — from flights to private transfers.</p>
+        </div>
+
+        <div class="stagger-cards grid grid-cols-2 md:grid-cols-4 gap-4">
+            @{
+                var transports = new[]
+                {
+                    ("fa-plane", "Flights", "Best fare across 500+ airlines", "#2563eb"),
+                    ("fa-car", "Car Rentals", "Freedom to explore at your pace", "#7c3aed"),
+                    ("fa-gem", "Limousines", "Premium transfers & VIP service", "#d97706"),
+                    ("fa-bus", "Group Transfers", "Shared rides at budget prices", "#059669")
+                };
+            }
+            @foreach (var (icon, title, desc, color) in transports)
+            {
+                <div class="stagger-card glass-card p-6 text-center cursor-pointer">
+                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4" style="background: @(color)22; border: 1px solid @(color)44">
+                        <i class="fa-solid @icon text-2xl" style="color: @color"></i>
+                    </div>
+                    <h3 class="text-white font-bold text-base">@title</h3>
+                    <p class="text-gray-500 text-sm mt-2 leading-relaxed">@desc</p>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══ AI ASSISTANT PREVIEW ═══ -->
+<section class="section" id="ai-assistant">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="glass-card p-8 md:p-12 text-center relative overflow-hidden">
+            <div class="glow-orb" style="width:300px;height:300px;background:#7c3aed;top:-100px;right:-50px;opacity:0.12;"></div>
+            <div class="glow-orb" style="width:200px;height:200px;background:#2563eb;bottom:-50px;left:-50px;opacity:0.1;"></div>
+
+            <div class="relative z-10">
+                <div class="w-20 h-20 rounded-3xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center mx-auto mb-6 float-anim shadow-lg shadow-blue-500/30">
+                    <i class="fa-solid fa-robot text-3xl text-white"></i>
+                </div>
+                <div class="section-badge mx-auto w-fit"><i class="fa-solid fa-crown"></i> <span data-i18n="sec.ai.badge">Premium Feature</span></div>
+                <h2 class="section-title mt-4 mb-4"><span data-i18n="sec.ai.title1">Your Personal</span> <span class="gradient-text" data-i18n="sec.ai.title2">AI Travel Agent</span></h2>
+                <p class="text-gray-400 max-w-2xl mx-auto text-lg leading-relaxed mb-8" data-i18n="sec.ai.subtitle">
+                    Get personalized trip recommendations, real-time pricing, visa requirements, and full itinerary planning — all powered by advanced AI.
+                </p>
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <button id="open-ai-chat" class="btn-primary px-8 py-3.5 text-base" onclick="document.getElementById('chat-toggle')?.click()">
+                        <i class="fa-solid fa-robot"></i> <span data-i18n="sec.ai.cta_auth">Chat with AI Assistant</span>
+                    </button>
+                }
+                else
+                {
+                    <a asp-controller="Account" asp-action="Register" class="btn-primary px-8 py-3.5 text-base">
+                        <i class="fa-solid fa-lock"></i> <span data-i18n="sec.ai.cta_guest">Unlock AI Features — Sign Up Free</span>
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══ PRICING SECTION ═══ -->
+<section class="section" id="pricing">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12 reveal-up">
+            <div class="section-badge"><i class="fa-solid fa-tags"></i> <span data-i18n="sec.pricing.badge">Pricing</span></div>
+            <h2 class="section-title mt-3">Simple, <span class="gradient-text">Transparent</span> Pricing</h2>
+            <p class="text-gray-400 mt-3 max-w-xl mx-auto" data-i18n="sec.pricing.subtitle">Start free, upgrade anytime. No hidden fees.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
+            <!-- Free Plan -->
+            <div class="pricing-card reveal-left">
+                <p class="text-gray-400 text-sm font-medium mb-2" data-i18n="pricing.free.label">For explorers</p>
+                <h3 class="text-2xl font-bold text-white" data-i18n="pricing.free.name">Free Plan</h3>
+                <div class="flex items-baseline gap-1 mt-4 mb-6">
+                    <span class="text-5xl font-black text-white">$0</span>
+                    <span class="text-gray-500">/month</span>
+                </div>
+                <div class="space-y-1 mb-8">
+                    <div class="pricing-feature"><i class="fa-solid fa-check"></i> <span data-i18n="pricing.free.f1">Browse countries & destinations</span></div>
+                    <div class="pricing-feature"><i class="fa-solid fa-check"></i> <span data-i18n="pricing.free.f2">View hotels & flights</span></div>
+                    <div class="pricing-feature"><i class="fa-solid fa-check"></i> <span data-i18n="pricing.free.f3">Explore activities</span></div>
+                    <div class="pricing-feature disabled"><i class="fa-solid fa-xmark"></i> <span data-i18n="pricing.free.f4">AI trip planning</span></div>
+                    <div class="pricing-feature disabled"><i class="fa-solid fa-xmark"></i> <span data-i18n="pricing.free.f5">AI chat assistant</span></div>
+                    <div class="pricing-feature disabled"><i class="fa-solid fa-xmark"></i> <span data-i18n="pricing.free.f6">Exclusive deals</span></div>
+                </div>
+                <a asp-controller="Account" asp-action="Register" class="btn-outline w-full py-3 justify-center" data-i18n="pricing.free.cta">Get Started Free</a>
+            </div>
+
+            <!-- Premium Plan -->
+            <div class="pricing-card featured reveal-right">
+                <span class="pricing-badge"><i class="fa-solid fa-crown mr-1"></i> <span data-i18n="pricing.premium.badge">Most Popular</span></span>
+                <p class="text-blue-300 text-sm font-medium mb-2" data-i18n="pricing.premium.label">For serious travelers</p>
+                <h3 class="text-2xl font-bold text-white" data-i18n="pricing.premium.name">Premium Plan</h3>
+                <div class="flex items-baseline gap-1 mt-4 mb-6">
+                    <span class="text-5xl font-black text-white">$19</span>
+                    <span class="text-gray-400">/month</span>
+                </div>
+                <div class="space-y-1 mb-8">
+                    <div class="pricing-feature"><i class="fa-solid fa-check"></i> <span data-i18n="pricing.premium.f1">Everything in Free</span></div>
+                    <div class="pricing-feature"><i class="fa-solid fa-check"></i> <span data-i18n="pricing.premium.f2">AI-powered trip planning</span></div>
+                    <div class="pricing-feature"><i class="fa-solid fa-check"></i> <span data-i18n="pricing.premium.f3">AI chat assistant 24/7</span></div>
+                    <div class="pricing-feature"><i class="fa-solid fa-check"></i> <span data-i18n="pricing.premium.f4">Exclusive member deals</span></div>
+                    <div class="pricing-feature"><i class="fa-solid fa-check"></i> <span data-i18n="pricing.premium.f5">Priority customer support</span></div>
+                    <div class="pricing-feature"><i class="fa-solid fa-check"></i> <span data-i18n="pricing.premium.f6">Unlimited itineraries</span></div>
+                </div>
+                <a asp-controller="Subscription" asp-action="Index" class="btn-primary w-full py-3 justify-center">
+                    <i class="fa-solid fa-crown"></i> <span data-i18n="pricing.premium.cta">Upgrade to Premium</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══ TESTIMONIALS ═══ -->
+<section class="section" id="testimonials">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12 reveal-up">
+            <div class="section-badge"><i class="fa-solid fa-quote-left"></i> <span data-i18n="sec.testimonials.badge">Testimonials</span></div>
+            <h2 class="section-title mt-3"><span data-i18n="sec.testimonials.title1">What Travelers</span> <span class="gradient-text" data-i18n="sec.testimonials.title2">Say About Us</span></h2>
+        </div>
+
+        <div class="stagger-cards grid grid-cols-1 md:grid-cols-3 gap-6">
+            @{
+                var testimonials = new[]
+                {
+                    ("Sarah M.", "Travel Blogger", "TravelAI planned my 2-week Japan trip in minutes. The AI suggestions were spot-on — I discovered hidden gems I'd never have found myself!", 5, "S"),
+                    ("Ahmed K.", "Business Traveler", "The premium plan is worth every penny. The AI assistant helped me optimize my budget and found a luxury hotel for 40% less than listed prices.", 5, "A"),
+                    ("Elena R.", "Family Vacationer", "Planning a family trip used to be exhausting. TravelAI made it effortless. The itinerary was perfect for both kids and adults!", 5, "E"),
+                };
+            }
+            @foreach (var (name, role, text, rating, initial) in testimonials)
+            {
+                <div class="stagger-card testimonial-card">
+                    <div class="flex gap-1 mb-4">
+                        @for (int i = 0; i < rating; i++)
+                        {
+                            <i class="fa-solid fa-star text-amber-400 text-sm"></i>
+                        }
+                    </div>
+                    <p class="text-gray-300 text-sm leading-relaxed italic mb-6">"@text"</p>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm">
+                            @initial
+                        </div>
+                        <div>
+                            <p class="text-white font-semibold text-sm">@name</p>
+                            <p class="text-gray-500 text-xs">@role</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══ FAQ SECTION ═══ -->
+<section class="section" id="faq">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12 reveal-up">
+            <div class="section-badge"><i class="fa-solid fa-circle-question"></i> <span data-i18n="sec.faq.badge">FAQ</span></div>
+            <h2 class="section-title mt-3"><span data-i18n="sec.faq.title1">Frequently Asked</span> <span class="gradient-text" data-i18n="sec.faq.title2">Questions</span></h2>
+        </div>
+
+        <div class="reveal-up">
+            @{
+                var faqs = new[]
+                {
+                    ("What is TravelAI?", "TravelAI is an AI-powered smart travel platform that helps you explore destinations, book hotels and flights, and plan complete trip itineraries using artificial intelligence."),
+                    ("Is the free plan really free?", "Yes! The Free plan gives you full access to browsing countries, hotels, flights, and activities with no time limit. AI planning features require the Premium plan."),
+                    ("How does AI trip planning work?", "Our AI analyzes your budget, travel dates, preferences, and destination to generate a complete day-by-day itinerary including hotel recommendations, activities, transport, and local tips."),
+                    ("Can I cancel my premium subscription?", "Absolutely. You can cancel anytime from your account settings. You'll retain premium access until the end of your billing period."),
+                    ("How many languages does TravelAI support?", "TravelAI supports 7 languages: English, Arabic, French, Spanish, Chinese, Russian, and Turkish. Switch instantly using the language button in the bottom-left corner."),
+                };
+            }
+            @foreach (var (q, a) in faqs)
+            {
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>@q</span>
+                        <span class="faq-icon"><i class="fa-solid fa-plus"></i></span>
+                    </div>
+                    <div class="faq-answer">@a</div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<!-- ═══ CTA SECTION ═══ -->
+<section class="section">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="relative overflow-hidden rounded-2xl p-12 text-center" style="background: linear-gradient(135deg, rgba(37,99,235,0.3) 0%, rgba(124,58,237,0.2) 100%); border: 1px solid rgba(37,99,235,0.3);">
+            <div class="glow-orb" style="width:400px;height:400px;background:#2563eb;top:-200px;left:50%;transform:translateX(-50%);opacity:0.2;"></div>
+            <div class="relative z-10">
+                <h2 class="section-title mb-4"><span data-i18n="cta.title1">Ready to Start</span> <span class="gradient-text" data-i18n="cta.title2">Your Adventure?</span></h2>
+                <p class="text-gray-400 text-lg mb-8 max-w-xl mx-auto" data-i18n="cta.subtitle">Join 2 million+ travelers who plan smarter with TravelAI.</p>
+                <div class="flex flex-wrap gap-4 justify-center">
+                    <a asp-controller="Account" asp-action="Register" class="btn-primary px-8 py-3.5 text-base">
+                        <i class="fa-solid fa-rocket"></i> <span data-i18n="cta.btn1">Get Started Free</span>
+                    </a>
+                    <a asp-controller="Countries" asp-action="Index" class="btn-outline px-8 py-3.5 text-base">
+                        <i class="fa-solid fa-earth-americas"></i> <span data-i18n="cta.btn2">Explore Destinations</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

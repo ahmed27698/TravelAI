@@ -1,0 +1,201 @@
+@{
+    ViewData["Title"] = "Contact Us";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="pt-24 pb-16 min-h-screen">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <!-- Header -->
+        <div class="text-center mb-12 reveal-up">
+            <div class="section-badge"><i class="fa-solid fa-headset"></i> <span data-i18n="contact.badge">Support</span></div>
+            <h1 class="text-4xl md:text-5xl font-bold text-white mt-4">
+                <span data-i18n="contact.title1">Get in</span> <span class="gradient-text" data-i18n="contact.title2">Touch</span>
+            </h1>
+            <p class="text-gray-400 mt-4 text-lg max-w-xl mx-auto" data-i18n="contact.subtitle">Our team is here to help. Reach out for support, partnerships, or just to say hello.</p>
+        </div>
+
+        <div class="grid lg:grid-cols-3 gap-8">
+
+            <!-- Contact Info Cards -->
+            <div class="space-y-4 reveal-left">
+                <div class="glass-card p-5 flex items-start gap-4 hover:border-blue-500/30 transition-colors">
+                    <div class="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center flex-shrink-0">
+                        <i class="fa-solid fa-envelope text-blue-400"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-white font-semibold text-sm mb-1">Email Support</h4>
+                        <p class="text-gray-400 text-xs">support@travelai.com</p>
+                        <p class="text-gray-500 text-xs mt-1">Response within 24 hours</p>
+                    </div>
+                </div>
+                <div class="glass-card p-5 flex items-start gap-4 hover:border-green-500/30 transition-colors">
+                    <div class="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center flex-shrink-0">
+                        <i class="fa-solid fa-comments text-green-400"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-white font-semibold text-sm mb-1">Live Chat</h4>
+                        <p class="text-gray-400 text-xs">Mon–Fri, 9am–6pm UTC</p>
+                        <p class="text-gray-500 text-xs mt-1">Average wait &lt; 2 min</p>
+                    </div>
+                </div>
+                <div class="glass-card p-5 flex items-start gap-4 hover:border-purple-500/30 transition-colors">
+                    <div class="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center flex-shrink-0">
+                        <i class="fa-brands fa-twitter text-purple-400"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-white font-semibold text-sm mb-1">Social Media</h4>
+                        <p class="text-gray-400 text-xs">@@TravelAI on X / Twitter</p>
+                        <p class="text-gray-500 text-xs mt-1">DMs open for quick queries</p>
+                    </div>
+                </div>
+                <div class="glass-card p-5 flex items-start gap-4 hover:border-amber-500/30 transition-colors">
+                    <div class="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center flex-shrink-0">
+                        <i class="fa-solid fa-robot text-amber-400"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-white font-semibold text-sm mb-1">AI Assistant</h4>
+                        <p class="text-gray-400 text-xs leading-relaxed">Use the chat widget (bottom right) for instant travel planning help.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Form -->
+            <div class="lg:col-span-2 reveal-right">
+                <div class="glass-card p-8">
+                    <h3 class="text-xl font-bold text-white mb-6">Send us a Message</h3>
+
+                    <!-- Success state (hidden by default) -->
+                    <div id="contact-success" class="hidden flex-col items-center text-center py-8">
+                        <div class="w-20 h-20 rounded-full bg-green-500/10 border border-green-500/30 flex items-center justify-center mx-auto mb-5">
+                            <i class="fa-solid fa-circle-check text-green-400 text-4xl"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-white mb-2" data-i18n="contact.success_title">Message Sent!</h4>
+                        <p class="text-gray-400 text-sm mb-6" data-i18n="contact.success_sub">Thank you for reaching out. Our team will get back to you within 24 hours.</p>
+                        <button id="contact-reset" class="btn-outline px-6 py-2.5 text-sm">
+                            <i class="fa-solid fa-rotate-left mr-1"></i> <span data-i18n="contact.another">Send Another</span>
+                        </button>
+                    </div>
+
+                    <!-- Error banner -->
+                    <div id="contact-error" class="hidden items-center gap-3 bg-red-500/10 border border-red-500/30 rounded-xl p-4 mb-5">
+                        <i class="fa-solid fa-circle-exclamation text-red-400 flex-shrink-0"></i>
+                        <p id="contact-error-msg" class="text-red-300 text-sm"></p>
+                    </div>
+
+                    <!-- Form -->
+                    <form id="contact-form">
+                        <div class="space-y-5">
+                            <div class="grid sm:grid-cols-2 gap-5">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-300 mb-1.5" data-i18n="contact.name">Full Name <span class="text-red-400">*</span></label>
+                                    <div class="relative">
+                                        <i class="fa-solid fa-user absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
+                                        <input id="cf-name" name="name" type="text" placeholder="John Doe" data-i18n-placeholder="contact.name_ph" class="auth-input" required />
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-300 mb-1.5" data-i18n="contact.email">Email Address <span class="text-red-400">*</span></label>
+                                    <div class="relative">
+                                        <i class="fa-solid fa-envelope absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
+                                        <input id="cf-email" name="email" type="email" placeholder="you@example.com" data-i18n-placeholder="contact.email_ph" class="auth-input" required />
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-1.5" data-i18n="contact.subject">Subject</label>
+                                <div class="relative">
+                                    <i class="fa-solid fa-tag absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
+                                    <select id="cf-subject" name="subject" class="search-input auth-input">
+                                        <option value="General Inquiry">General Inquiry</option>
+                                        <option value="Technical Support">Technical Support</option>
+                                        <option value="Billing &amp; Subscription">Billing &amp; Subscription</option>
+                                        <option value="Partnership">Partnership</option>
+                                        <option value="Feedback &amp; Suggestions">Feedback &amp; Suggestions</option>
+                                        <option value="Bug Report">Bug Report</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-1.5" data-i18n="contact.message">Message <span class="text-red-400">*</span></label>
+                                <textarea id="cf-message" name="message" rows="5" placeholder="Tell us how we can help you..." data-i18n-placeholder="contact.message_ph" class="auth-input resize-none" style="height:auto;padding-top:0.75rem;" required></textarea>
+                            </div>
+                            <button id="cf-submit" type="submit" class="btn-primary w-full py-3.5 justify-center text-base">
+                                <i class="fa-solid fa-paper-plane mr-2"></i>
+                                <span id="cf-btn-text" data-i18n="contact.send">Send Message</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-12 text-center reveal-up">
+            <p class="text-gray-500 text-sm">Looking for quick answers? <a asp-controller="Home" asp-action="Faq" class="text-blue-400 hover:text-blue-300 transition-colors">Visit our FAQ →</a></p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+(function () {
+    const form    = document.getElementById('contact-form');
+    const success = document.getElementById('contact-success');
+    const errBox  = document.getElementById('contact-error');
+    const errMsg  = document.getElementById('contact-error-msg');
+    const submit  = document.getElementById('cf-submit');
+    const btnText = document.getElementById('cf-btn-text');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        errBox.classList.add('hidden');
+        submit.disabled = true;
+        btnText.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Sending…';
+
+        const payload = {
+            name:    document.getElementById('cf-name').value.trim(),
+            email:   document.getElementById('cf-email').value.trim(),
+            subject: document.getElementById('cf-subject').value,
+            message: document.getElementById('cf-message').value.trim()
+        };
+
+        try {
+            const res  = await fetch('/Home/SendContact', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                form.classList.add('hidden');
+                success.classList.remove('hidden');
+                success.classList.add('flex');
+            } else {
+                errMsg.textContent = data.message || 'Something went wrong. Please try again.';
+                errBox.classList.remove('hidden');
+                errBox.classList.add('flex');
+                submit.disabled = false;
+                btnText.innerHTML = '<i class="fa-solid fa-paper-plane mr-2"></i>Send Message';
+            }
+        } catch {
+            errMsg.textContent = 'Network error. Please check your connection and try again.';
+            errBox.classList.remove('hidden');
+            errBox.classList.add('flex');
+            submit.disabled = false;
+            btnText.innerHTML = '<i class="fa-solid fa-paper-plane mr-2"></i>Send Message';
+        }
+    });
+
+    document.getElementById('contact-reset').addEventListener('click', () => {
+        form.reset();
+        form.classList.remove('hidden');
+        success.classList.add('hidden');
+        success.classList.remove('flex');
+        errBox.classList.add('hidden');
+        submit.disabled = false;
+        btnText.innerHTML = '<i class="fa-solid fa-paper-plane mr-2"></i>Send Message';
+    });
+})();
+</script>
+}

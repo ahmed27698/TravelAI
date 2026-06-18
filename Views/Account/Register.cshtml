@@ -1,0 +1,94 @@
+@model TravelAI.Models.ViewModels.RegisterViewModel
+@{
+    ViewData["Title"] = "Create Account";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="min-h-screen flex items-center justify-center px-4 pt-20 pb-12" style="background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(124,58,237,0.2) 0%, transparent 70%), #030712;">
+
+    <div class="w-full max-w-md">
+        <div class="text-center mb-8">
+            <a asp-controller="Home" asp-action="Index" class="inline-flex items-center gap-2 mb-6">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
+                    <i class="fa-solid fa-plane text-white"></i>
+                </div>
+                <span class="text-2xl font-bold bg-gradient-to-r from-blue-400 to-blue-200 bg-clip-text text-transparent">TravelAI</span>
+            </a>
+            <h1 class="text-3xl font-bold text-white" data-i18n="register.title">Start your journey</h1>
+            <p class="text-gray-400 mt-2" data-i18n="register.subtitle">Create a free account and explore the world</p>
+        </div>
+
+        <div class="glass-card p-8">
+            <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+
+            <form asp-action="Register" method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="space-y-5">
+                    <div>
+                        <label asp-for="FullName" class="block text-sm font-medium text-gray-300 mb-1.5" data-i18n="register.name">Full Name</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-user absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
+                            <input asp-for="FullName" class="auth-input" placeholder="John Doe" data-i18n-placeholder="register.name" autocomplete="name" />
+                        </div>
+                        <span asp-validation-for="FullName" class="field-validation-error"></span>
+                    </div>
+
+                    <div>
+                        <label asp-for="Email" class="block text-sm font-medium text-gray-300 mb-1.5" data-i18n="register.email">Email address</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-envelope absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
+                            <input asp-for="Email" class="auth-input" type="email" placeholder="you@example.com" data-i18n-placeholder="register.email" autocomplete="email" />
+                        </div>
+                        <span asp-validation-for="Email" class="field-validation-error"></span>
+                    </div>
+
+                    <div>
+                        <label asp-for="Password" class="block text-sm font-medium text-gray-300 mb-1.5" data-i18n="register.password">Password</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
+                            <input asp-for="Password" class="auth-input" type="password" placeholder="Min. 8 characters" data-i18n-placeholder="register.password" autocomplete="new-password" />
+                        </div>
+                        <span asp-validation-for="Password" class="field-validation-error"></span>
+                    </div>
+
+                    <div>
+                        <label asp-for="ConfirmPassword" class="block text-sm font-medium text-gray-300 mb-1.5" data-i18n="register.confirm">Confirm Password</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-shield-check absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
+                            <input asp-for="ConfirmPassword" class="auth-input" type="password" placeholder="Repeat your password" data-i18n-placeholder="register.confirm" autocomplete="new-password" />
+                        </div>
+                        <span asp-validation-for="ConfirmPassword" class="field-validation-error"></span>
+                    </div>
+
+                    <div class="flex items-start gap-3 pt-1">
+                        <i class="fa-solid fa-shield-halved text-blue-500 mt-0.5"></i>
+                        <p class="text-xs text-gray-500 leading-relaxed">
+                            By creating an account, you agree to our
+                            <a asp-controller="Home" asp-action="Terms" class="text-blue-400 hover:underline">Terms of Service</a> and
+                            <a asp-controller="Home" asp-action="Privacy" class="text-blue-400 hover:underline">Privacy Policy</a>.
+                        </p>
+                    </div>
+
+                    <button type="submit" class="btn-primary w-full py-3.5 text-base justify-center">
+                        <i class="fa-solid fa-rocket"></i>
+                        <span data-i18n="register.btn">Create Free Account</span>
+                    </button>
+                </div>
+            </form>
+
+            <div class="mt-6 text-center">
+                <p class="text-gray-500 text-sm">
+                    <span data-i18n="register.have_account">Already have an account?</span>
+                    <a asp-controller="Account" asp-action="Login" class="text-blue-400 hover:text-blue-300 font-medium ml-1 transition-colors" data-i18n="register.signin">Sign in</a>
+                </p>
+            </div>
+        </div>
+
+        <div class="text-center mt-6">
+            <a asp-controller="Home" asp-action="Index" class="text-gray-600 hover:text-gray-400 text-sm transition-colors flex items-center justify-center gap-2">
+                <i class="fa-solid fa-arrow-left text-xs"></i> <span data-i18n="register.back">Back to Home</span>
+            </a>
+        </div>
+    </div>
+</div>

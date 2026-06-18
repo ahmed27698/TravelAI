@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - TravelAI</title>
+    <link rel="icon" href="~/favicon.svg" type="image/svg+xml" />
+    <script>history.scrollRestoration = 'manual'; window.scrollTo(0, 0);</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icons/7.2.3/css/flag-icons.min.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter','sans-serif'], serif: ['Playfair Display','serif'] },
+                    colors: {
+                        primary: { 400:'#60a5fa', 500:'#3b82f6', 600:'#2563eb', 700:'#1d4ed8' }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="~/css/travelai.css" asp-append-version="true" />
+</head>
+<body class="bg-gray-950 text-gray-100 font-sans antialiased" id="app-body">
+<div style="display:none;">@Html.AntiForgeryToken()</div>
+
+    <!-- ── Navbar ── -->
+    <nav class="fixed top-0 left-0 right-0 z-50 navbar-glass" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+
+                <!-- Logo -->
+                <a asp-controller="Home" asp-action="Index" class="flex items-center gap-2 flex-shrink-0">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-lg shadow-blue-500/30">
+                        <i class="fa-solid fa-plane text-white text-sm"></i>
+                    </div>
+                    <span class="text-xl font-bold bg-gradient-to-r from-blue-400 to-blue-200 bg-clip-text text-transparent">TravelAI</span>
+                </a>
+
+                <!-- Desktop Nav -->
+                <div class="hidden md:flex items-center gap-1">
+                    <a asp-controller="Home" asp-action="Index" class="nav-link"><i class="fa-solid fa-house text-xs mr-1"></i><span data-i18n="nav.home">Home</span></a>
+                    <a asp-controller="Countries" asp-action="Index" class="nav-link"><i class="fa-solid fa-earth-americas text-xs mr-1"></i><span data-i18n="nav.countries">Countries</span></a>
+                    <a asp-controller="Flights" asp-action="Index" class="nav-link"><i class="fa-solid fa-plane text-xs mr-1"></i><span data-i18n="nav.flights">Flights</span></a>
+                    <a asp-controller="Hotels" asp-action="Index" class="nav-link"><i class="fa-solid fa-hotel text-xs mr-1"></i><span data-i18n="nav.hotels">Hotels</span></a>
+                    <a asp-controller="Activities" asp-action="Index" class="nav-link"><i class="fa-solid fa-compass text-xs mr-1"></i><span data-i18n="nav.activities">Activities</span></a>
+                    <a asp-controller="Subscription" asp-action="Index" class="nav-link text-amber-400"><i class="fa-solid fa-crown text-xs mr-1"></i><span data-i18n="nav.premium">Premium</span></a>
+                    @if (User.HasClaim("IsAdmin", "True"))
+                    {
+                        <a asp-controller="Admin" asp-action="Index" class="nav-link text-red-400"><i class="fa-solid fa-shield-halved text-xs mr-1"></i>Admin</a>
+                    }
+                </div>
+
+                <!-- Right Actions -->
+                <div class="flex items-center gap-2">
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <a asp-controller="Account" asp-action="Profile" class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-white/5 transition-colors">
+                            <div class="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-xs font-bold text-white">
+                                @User.Identity.Name?.Substring(0, 1).ToUpper()
+                            </div>
+                            <span class="text-sm text-gray-300">@User.Identity.Name?.Split(' ')[0]</span>
+                        </a>
+                        <form asp-controller="Account" asp-action="Logout" method="post" class="hidden md:inline">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn-outline text-sm px-3 py-2">
+                                <i class="fa-solid fa-right-from-bracket text-xs"></i>
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <a asp-controller="Account" asp-action="Login" class="btn-outline text-sm px-4 py-2 hidden sm:inline-flex" data-i18n="nav.login">Login</a>
+                        <a asp-controller="Account" asp-action="Register" class="btn-primary text-sm px-4 py-2" data-i18n="nav.get_started">Get Started</a>
+                    }
+                    <!-- Mobile hamburger -->
+                    <button id="mobile-menu-btn" class="md:hidden glass-btn p-2 rounded-lg ml-1">
+                        <i class="fa-solid fa-bars text-gray-300" id="hamburger-icon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="mobile-menu md:hidden" style="display:none;">
+            <div class="px-4 py-3 space-y-1 border-t border-white/5">
+                <a asp-controller="Home" asp-action="Index" class="mobile-nav-link"><i class="fa-solid fa-house w-5"></i> <span data-i18n="nav.home">Home</span></a>
+                <a asp-controller="Countries" asp-action="Index" class="mobile-nav-link"><i class="fa-solid fa-earth-americas w-5"></i> <span data-i18n="nav.countries">Countries</span></a>
+                <a asp-controller="Flights" asp-action="Index" class="mobile-nav-link"><i class="fa-solid fa-plane w-5"></i> <span data-i18n="nav.flights">Flights</span></a>
+                <a asp-controller="Hotels" asp-action="Index" class="mobile-nav-link"><i class="fa-solid fa-hotel w-5"></i> <span data-i18n="nav.hotels">Hotels</span></a>
+                <a asp-controller="Activities" asp-action="Index" class="mobile-nav-link"><i class="fa-solid fa-compass w-5"></i> <span data-i18n="nav.activities">Activities</span></a>
+                <a asp-controller="Subscription" asp-action="Index" class="mobile-nav-link text-amber-400"><i class="fa-solid fa-crown w-5"></i> <span data-i18n="nav.premium">Premium</span></a>
+                <div class="border-t border-white/5 pt-2 mt-2 flex items-center justify-between">
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <a asp-controller="Account" asp-action="Profile" class="mobile-nav-link flex-1"><i class="fa-solid fa-user w-5"></i> <span data-i18n="nav.my_profile">My Profile</span></a>
+                        <form asp-controller="Account" asp-action="Logout" method="post" class="inline">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="mobile-nav-link text-red-400 w-full text-left">
+                                <i class="fa-solid fa-right-from-bracket w-5"></i> <span data-i18n="nav.logout">Logout</span>
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <a asp-controller="Account" asp-action="Login" class="mobile-nav-link flex-1"><i class="fa-solid fa-right-to-bracket w-5"></i> <span data-i18n="nav.login">Login</span></a>
+                        <a asp-controller="Account" asp-action="Register" class="mobile-nav-link text-blue-400 flex-1"><i class="fa-solid fa-rocket w-5"></i> <span data-i18n="nav.get_started">Get Started</span></a>
+                    }
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="pt-16">
+        @RenderBody()
+    </main>
+
+    <!-- Footer -->
+    @if (ViewContext.RouteData.Values["controller"]?.ToString() != "Admin")
+    {
+    <footer class="bg-gray-950 border-t border-white/5 mt-24">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-8 md:gap-12">
+                <div class="col-span-2">
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
+                            <i class="fa-solid fa-plane text-white text-xs"></i>
+                        </div>
+                        <span class="text-lg font-bold text-white">TravelAI</span>
+                    </div>
+                    <p class="text-gray-400 text-sm leading-relaxed max-w-xs" data-i18n="footer.tagline">Your smart AI travel companion. Plan perfect trips with the power of artificial intelligence.</p>
+                    <div class="flex gap-3 mt-6">
+                        <a href="https://x.com/home?lang=en" class="social-icon"><i class="fab fa-twitter"></i></a>
+                        <a href="https://www.instagram.com/?hl=en" class="social-icon"><i class="fab fa-instagram"></i></a>
+                        <a href="https://www.facebook.com/" class="social-icon"><i class="fab fa-facebook"></i></a>
+                        <a href="https://www.linkedin.com/feed/" class="social-icon"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-white font-semibold mb-4 text-sm uppercase tracking-wider" data-i18n="footer.explore">Explore</h4>
+                    <ul class="space-y-2.5 text-sm text-gray-400">
+                        <li><a asp-controller="Countries" asp-action="Index" class="footer-link" data-i18n="footer.countries">Countries</a></li>
+                        <li><a asp-controller="Hotels" asp-action="Index" class="footer-link" data-i18n="footer.hotels">Hotels</a></li>
+                        <li><a asp-controller="Flights" asp-action="Index" class="footer-link" data-i18n="footer.flights">Flights</a></li>
+                        <li><a asp-controller="Activities" asp-action="Index" class="footer-link" data-i18n="footer.activities">Activities</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-semibold mb-4 text-sm uppercase tracking-wider" data-i18n="footer.company">Company</h4>
+                    <ul class="space-y-2.5 text-sm text-gray-400">
+                        <li><a asp-controller="Home" asp-action="Privacy" class="footer-link" data-i18n="footer.privacy">Privacy Policy</a></li>
+                        <li><a asp-controller="Subscription" asp-action="Index" class="footer-link" data-i18n="footer.pricing">Pricing</a></li>
+                        <li><a asp-controller="Home" asp-action="Faq" class="footer-link" data-i18n="footer.faq">FAQ</a></li>
+                        <li><a asp-controller="Home" asp-action="Blog" class="footer-link" data-i18n="footer.blog">Blog</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-semibold mb-4 text-sm uppercase tracking-wider" data-i18n="footer.account">Account</h4>
+                    <ul class="space-y-2.5 text-sm text-gray-400">
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li><a asp-controller="Account" asp-action="Profile" class="footer-link" data-i18n="footer.profile">My Profile</a></li>
+                            <li><a asp-controller="Subscription" asp-action="Index" class="footer-link" data-i18n="footer.subscription">Subscription</a></li>
+                        }
+                        else
+                        {
+                            <li><a asp-controller="Account" asp-action="Login" class="footer-link" data-i18n="footer.login_link">Sign In</a></li>
+                            <li><a asp-controller="Account" asp-action="Register" class="footer-link" data-i18n="footer.create_account">Create Account</a></li>
+                        }
+                        <li><a asp-controller="Home" asp-action="Contact" class="footer-link" data-i18n="footer.help">Help Center</a></li>
+                        <li><a asp-controller="Home" asp-action="Contact" class="footer-link" data-i18n="footer.contact">Contact Us</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-white/5 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="text-gray-600 text-sm" data-i18n="footer.copyright">© 2026 TravelAI. All rights reserved.</p>
+                <div class="flex items-center gap-6 text-xs text-gray-700">
+                    <a asp-controller="Home" asp-action="Privacy" class="hover:text-gray-500 transition-colors" data-i18n="footer.privacy">Privacy</a>
+                    <span>&bull;</span>
+                    <a asp-controller="Home" asp-action="Terms" class="hover:text-gray-500 transition-colors">Terms</a>
+                    <span>&bull;</span>
+                    <span data-i18n="footer.powered">Powered by AI • Built for Explorers</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+    }
+
+    <!-- AI Chat Widget (authenticated users only) -->
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <div id="chat-widget">
+            <button id="chat-toggle" class="chat-fab" title="AI Travel Assistant">
+                <i class="fa-solid fa-robot text-xl"></i>
+                <span class="chat-badge">AI</span>
+            </button>
+            <div id="chat-panel" class="chat-panel" style="display:none;">
+                <div class="chat-header">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                            <i class="fa-solid fa-robot text-white text-sm"></i>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-white text-sm" data-i18n="chat.title">AI Travel Assistant</p>
+                            <p class="text-xs text-green-400"><span class="inline-block w-1.5 h-1.5 rounded-full bg-green-400 mr-1 animate-pulse"></span><span data-i18n="chat.status">Online</span></p>
+                        </div>
+                    </div>
+                    <button id="chat-close" class="text-gray-400 hover:text-white transition-colors p-1">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+                <div id="chat-messages" class="chat-messages">
+                    <div class="chat-bubble assistant">
+                        <p data-i18n="chat.greeting">Hello! I'm your AI travel assistant. Ask me anything about destinations, hotels, flights, or trip planning!</p>
+                    </div>
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" id="chat-input" placeholder="Ask about your next adventure..." data-i18n-placeholder="chat.placeholder" class="chat-input" maxlength="500" />
+                    <button id="chat-send" class="chat-send-btn">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <a asp-controller="Account" asp-action="Login" class="chat-fab-guest" title="Sign in to chat with AI" data-i18n-title="chat.locked_title">
+            <i class="fa-solid fa-lock text-lg"></i>
+        </a>
+    }
+
+    <!-- Language Switcher -->
+    <div id="lang-switcher" class="lang-switcher">
+        <button id="lang-toggle" class="lang-fab" title="Switch Language">
+            <i class="fa-solid fa-globe text-lg"></i>
+        </button>
+        <div id="lang-dropdown" class="lang-dropdown" style="display:none;">
+            <div class="lang-dropdown-header" data-i18n="lang.title">Select Language</div>
+            <a href="#" class="lang-option active" data-lang="en"><span class="fi fi-gb lang-flag"></span><span>English</span></a>
+            <a href="#" class="lang-option" data-lang="ar"><span class="fi fi-ae lang-flag"></span><span>العربية</span></a>
+            <a href="#" class="lang-option" data-lang="fr"><span class="fi fi-fr lang-flag"></span><span>Français</span></a>
+            <a href="#" class="lang-option" data-lang="es"><span class="fi fi-es lang-flag"></span><span>Español</span></a>
+            <a href="#" class="lang-option" data-lang="zh"><span class="fi fi-cn lang-flag"></span><span>中文</span></a>
+            <a href="#" class="lang-option" data-lang="ru"><span class="fi fi-ru lang-flag"></span><span>Русский</span></a>
+            <a href="#" class="lang-option" data-lang="tr"><span class="fi fi-tr lang-flag"></span><span>Türkçe</span></a>
+        </div>
+    </div>
+
+    <!-- Theme Picker -->
+    <div id="theme-picker" class="theme-picker">
+        <button id="theme-picker-toggle" class="theme-fab" title="Change Theme">
+            <span class="theme-fab-inner">
+                <i class="fa-solid fa-palette theme-fab-icon"></i>
+                <span class="theme-fab-dot" id="theme-fab-dot"></span>
+            </span>
+        </button>
+        <div id="theme-dropdown" class="theme-dropdown" style="display:none;">
+            <div class="theme-dropdown-header">
+                <i class="fa-solid fa-swatchbook mr-1.5"></i> Themes
+            </div>
+            <div class="theme-swatches">
+                <button class="theme-swatch active" data-theme="dark" data-color="#3b82f6">
+                    <span class="swatch-dot" style="background:linear-gradient(135deg,#0f172a,#334155)"></span>
+                    <span class="swatch-label">Dark</span>
+                    <i class="fa-solid fa-check swatch-check"></i>
+                </button>
+                <button class="theme-swatch" data-theme="light" data-color="#f59e0b">
+                    <span class="swatch-dot" style="background:linear-gradient(135deg,#f1f5f9,#cbd5e1);border-color:rgba(0,0,0,0.12)"></span>
+                    <span class="swatch-label">Light</span>
+                    <i class="fa-solid fa-check swatch-check"></i>
+                </button>
+                <button class="theme-swatch" data-theme="theme-ocean" data-color="#06b6d4">
+                    <span class="swatch-dot" style="background:linear-gradient(135deg,#06b6d4,#0e7490)"></span>
+                    <span class="swatch-label">Ocean</span>
+                    <i class="fa-solid fa-check swatch-check"></i>
+                </button>
+                <button class="theme-swatch" data-theme="theme-sunset" data-color="#f97316">
+                    <span class="swatch-dot" style="background:linear-gradient(135deg,#f97316,#b45309)"></span>
+                    <span class="swatch-label">Sunset</span>
+                    <i class="fa-solid fa-check swatch-check"></i>
+                </button>
+                <button class="theme-swatch" data-theme="theme-forest" data-color="#22c55e">
+                    <span class="swatch-dot" style="background:linear-gradient(135deg,#22c55e,#15803d)"></span>
+                    <span class="swatch-label">Forest</span>
+                    <i class="fa-solid fa-check swatch-check"></i>
+                </button>
+                <button class="theme-swatch" data-theme="theme-galaxy" data-color="#a855f7">
+                    <span class="swatch-dot" style="background:linear-gradient(135deg,#a855f7,#6d28d9)"></span>
+                    <span class="swatch-label">Galaxy</span>
+                    <i class="fa-solid fa-check swatch-check"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="~/js/i18n.js" asp-append-version="true"></script>
+    <script src="~/js/travelai.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

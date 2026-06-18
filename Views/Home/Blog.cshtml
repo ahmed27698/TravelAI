@@ -1,0 +1,106 @@
+@{
+    ViewData["Title"] = "Travel Blog";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="pt-24 pb-16 min-h-screen">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <!-- Header -->
+        <div class="text-center mb-14 reveal-up">
+            <div class="section-badge"><i class="fa-solid fa-pen-nib"></i> Travel Stories</div>
+            <h1 class="text-4xl md:text-5xl font-bold text-white mt-4">
+                <span class="gradient-text">Inspiring</span> Travel Stories
+            </h1>
+            <p class="text-gray-400 mt-4 text-lg max-w-xl mx-auto">Expert tips, hidden gems, and unforgettable journeys curated by our AI and travel community.</p>
+        </div>
+
+        <!-- Featured Article -->
+        <div class="glass-card overflow-hidden mb-10 reveal-up group">
+            <div class="grid md:grid-cols-2 gap-0">
+                <div class="relative overflow-hidden" style="min-height:280px;">
+                    <img src="https://images.unsplash.com/photo-1499856871958-5b9357976b82?w=800" alt="Paris" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" style="position:absolute;inset:0;" />
+                    <div class="absolute inset-0 bg-gradient-to-r from-transparent to-gray-950/30"></div>
+                    <div class="absolute top-4 left-4">
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold" style="background:rgba(37,99,235,0.9);color:#fff;">Featured</span>
+                    </div>
+                </div>
+                <div class="p-8 flex flex-col justify-center">
+                    <div class="flex items-center gap-2 text-xs text-gray-500 mb-3">
+                        <i class="fa-solid fa-calendar"></i>
+                        <span>June 10, 2026</span>
+                        <span class="mx-1">•</span>
+                        <i class="fa-solid fa-clock"></i>
+                        <span>8 min read</span>
+                    </div>
+                    <h2 class="text-2xl font-bold text-white mb-3 leading-snug">Paris Beyond the Eiffel Tower: 10 Hidden Gems You Must Visit</h2>
+                    <p class="text-gray-400 text-sm leading-relaxed mb-5">Most tourists flock to the same landmarks, but Paris is a city of neighbourhoods, secret courtyards, and unmarked cafés that locals call their own. Our AI has analyzed thousands of traveller reviews to bring you the city's best-kept secrets…</p>
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-xs font-bold text-white">S</div>
+                        <div>
+                            <p class="text-xs font-medium text-gray-300">Sophie Martin</p>
+                            <p class="text-xs text-gray-500">Senior Travel Editor</p>
+                        </div>
+                        <a href="#" class="ml-auto btn-outline text-xs px-4 py-2">Read More <i class="fa-solid fa-arrow-right ml-1"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Article Grid -->
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 stagger-cards">
+
+            @{
+                var articles = new[]
+                {
+                    new { Title = "Japan in Cherry Blossom Season: The Ultimate Planning Guide", Cat = "Asia", Time = "6 min read", Date = "June 5, 2026", Img = "https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?w=600", Author = "Kenji Tanaka", Tag = "Culture" },
+                    new { Title = "Budget Travel in Southeast Asia: $50/Day Is Possible", Cat = "Budget", Time = "10 min read", Date = "May 28, 2026", Img = "https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?w=600", Author = "Emma Rodriguez", Tag = "Budget" },
+                    new { Title = "The Maldives Overwater Bungalow Experience: Worth Every Penny?", Cat = "Luxury", Time = "5 min read", Date = "May 20, 2026", Img = "https://images.unsplash.com/photo-1573843981267-be1999ff37cd?w=600", Author = "David Chen", Tag = "Luxury" },
+                    new { Title = "Solo Travel Safety: 20 Tips From a Seasoned Female Traveller", Cat = "Tips", Time = "9 min read", Date = "May 15, 2026", Img = "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?w=600", Author = "Aisha Patel", Tag = "Safety" },
+                    new { Title = "How AI Is Changing the Way We Plan Vacations in 2026", Cat = "Technology", Time = "7 min read", Date = "May 8, 2026", Img = "https://images.unsplash.com/photo-1485738422979-f5c462d49f74?w=600", Author = "TravelAI Team", Tag = "AI" },
+                    new { Title = "Egypt Beyond Cairo: Exploring the Red Sea Riviera", Cat = "Africa", Time = "8 min read", Date = "April 30, 2026", Img = "https://images.unsplash.com/photo-1539768942893-daf53e448371?w=600", Author = "Omar Hassan", Tag = "Adventure" },
+                };
+            }
+
+            @foreach (var a in articles)
+            {
+                <div class="glass-card overflow-hidden stagger-card group">
+                    <div class="relative overflow-hidden" style="height:200px;">
+                        <img src="@a.Img" alt="@a.Title" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" style="position:absolute;inset:0;" />
+                        <div class="absolute top-3 left-3">
+                            <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-black/60 text-gray-200 backdrop-blur-sm">@a.Tag</span>
+                        </div>
+                    </div>
+                    <div class="p-5">
+                        <div class="flex items-center gap-2 text-xs text-gray-500 mb-2">
+                            <span>@a.Date</span>
+                            <span>•</span>
+                            <span>@a.Time</span>
+                        </div>
+                        <h3 class="text-sm font-bold text-white mb-3 leading-snug line-clamp-2">@a.Title</h3>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <div class="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-xs font-bold text-white">@a.Author[0]</div>
+                                <span class="text-xs text-gray-400">@a.Author</span>
+                            </div>
+                            <a href="#" class="text-blue-400 text-xs hover:text-blue-300 transition-colors">Read <i class="fa-solid fa-arrow-right text-xs ml-0.5"></i></a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Newsletter -->
+        <div class="mt-14 glass-card p-8 text-center reveal-up">
+            <div class="section-badge mx-auto mb-4"><i class="fa-solid fa-envelope"></i> Newsletter</div>
+            <h3 class="text-2xl font-bold text-white mb-2">Get Travel Inspiration Weekly</h3>
+            <p class="text-gray-400 text-sm mb-6 max-w-md mx-auto">Join 50,000+ travellers who receive our AI-curated travel guides, deals, and tips every Thursday.</p>
+            <div class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+                <input type="email" placeholder="your@email.com" class="search-input flex-1 py-3 text-sm" />
+                <button class="btn-primary px-6 py-3 text-sm whitespace-nowrap">
+                    <i class="fa-solid fa-paper-plane mr-1"></i> Subscribe Free
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

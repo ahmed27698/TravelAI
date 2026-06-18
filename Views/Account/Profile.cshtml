@@ -1,0 +1,216 @@
+@model TravelAI.Models.AppUser
+@{
+    ViewData["Title"] = "My Profile";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var plan = Model.Subscription?.Plan ?? "Free";
+    var isPremium = plan == "Premium";
+}
+
+<div class="pt-24 pb-16 min-h-screen">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        @if (TempData["ProfileSuccess"] != null)
+        {
+            <div class="flex items-center gap-3 bg-green-500/10 border border-green-500/30 rounded-xl p-4 mb-6 reveal-up">
+                <i class="fa-solid fa-circle-check text-green-400"></i>
+                <p class="text-green-300 text-sm">@TempData["ProfileSuccess"]</p>
+            </div>
+        }
+
+        <!-- Profile Header -->
+        <div class="glass-card p-8 mb-6 reveal-up">
+            <div class="flex flex-col md:flex-row items-start md:items-center gap-6">
+                <div class="relative">
+                    <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-3xl font-black text-white shadow-lg shadow-blue-500/30">
+                        @Model.FullName.Substring(0, 1).ToUpper()
+                    </div>
+                    @if (isPremium)
+                    {
+                        <div class="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-lg">
+                            <i class="fa-solid fa-crown text-white text-xs"></i>
+                        </div>
+                    }
+                </div>
+                <div class="flex-1">
+                    <div class="flex flex-wrap items-center gap-3 mb-1">
+                        <h1 class="text-2xl font-bold text-white">@Model.FullName</h1>
+                        <span class="px-3 py-1 rounded-full text-xs font-bold @(isPremium ? "bg-amber-500/20 text-amber-300 border border-amber-500/30" : "bg-blue-500/20 text-blue-300 border border-blue-500/30")">
+                            <i class="fa-solid @(isPremium ? "fa-crown" : "fa-user") mr-1"></i>@plan
+                        </span>
+                    </div>
+                    <p class="text-gray-400 flex items-center gap-2 text-sm">
+                        <i class="fa-solid fa-envelope text-xs"></i> @Model.Email
+                    </p>
+                    <p class="text-gray-600 text-xs mt-1 flex items-center gap-2">
+                        <i class="fa-solid fa-clock text-xs"></i>
+                        Member since @Model.CreatedAt.ToString("MMMM yyyy")
+                        @if (Model.LastLoginAt.HasValue)
+                        {
+                            <span class="ml-2"><i class="fa-solid fa-right-to-bracket text-xs mr-1"></i>Last login @Model.LastLoginAt.Value.ToString("MMM dd, yyyy")</span>
+                        }
+                    </p>
+                </div>
+                @if (!isPremium)
+                {
+                    <a asp-controller="Subscription" asp-action="Index" class="btn-primary px-5 py-2.5 text-sm flex-shrink-0">
+                        <i class="fa-solid fa-crown"></i> Upgrade to Premium
+                    </a>
+                }
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <!-- Left: Stats + Quick Links -->
+            <div class="space-y-6">
+                <!-- Stats -->
+                <div class="glass-card p-6 reveal-left">
+                    <h3 class="text-white font-semibold mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-chart-bar text-blue-400 text-sm"></i> <span data-i18n="profile.activity">Your Activity</span>
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-400 text-sm" data-i18n="profile.subscription">Subscription Plan</span>
+                            <span class="font-semibold text-sm @(isPremium ? "text-amber-300" : "text-blue-300")">@plan</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-400 text-sm">AI Chats</span>
+                            <span class="font-semibold text-white text-sm">—</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-400 text-sm">Saved Trips</span>
+                            <span class="font-semibold text-white text-sm">—</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-400 text-sm">Account Status</span>
+                            <span class="text-green-400 text-sm font-semibold flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-green-400 inline-block"></span> <span data-i18n="profile.active">Active</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="glass-card p-6 reveal-left">
+                    <h3 class="text-white font-semibold mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-bolt text-blue-400 text-sm"></i> <span data-i18n="profile.quick">Quick Actions</span>
+                    </h3>
+                    <div class="space-y-2">
+                        <a asp-controller="TripPlanner" asp-action="Index" class="flex items-center gap-3 p-2.5 rounded-lg hover:bg-white/5 transition-colors text-gray-300 hover:text-white text-sm">
+                            <i class="fa-solid fa-wand-magic-sparkles text-blue-400 w-4 text-center"></i> <span data-i18n="profile.plan_trip">Plan a Trip</span>
+                        </a>
+                        <a asp-controller="Countries" asp-action="Index" class="flex items-center gap-3 p-2.5 rounded-lg hover:bg-white/5 transition-colors text-gray-300 hover:text-white text-sm">
+                            <i class="fa-solid fa-earth-americas text-blue-400 w-4 text-center"></i> <span data-i18n="profile.explore">Explore Countries</span>
+                        </a>
+                        <a asp-controller="Hotels" asp-action="Index" class="flex items-center gap-3 p-2.5 rounded-lg hover:bg-white/5 transition-colors text-gray-300 hover:text-white text-sm">
+                            <i class="fa-solid fa-hotel text-blue-400 w-4 text-center"></i> <span data-i18n="profile.hotels">Browse Hotels</span>
+                        </a>
+                        <a asp-controller="Flights" asp-action="Index" class="flex items-center gap-3 p-2.5 rounded-lg hover:bg-white/5 transition-colors text-gray-300 hover:text-white text-sm">
+                            <i class="fa-solid fa-plane text-blue-400 w-4 text-center"></i> <span data-i18n="profile.flights">Search Flights</span>
+                        </a>
+                        <a asp-controller="Subscription" asp-action="Index" class="flex items-center gap-3 p-2.5 rounded-lg hover:bg-white/5 transition-colors text-amber-400 hover:text-amber-300 text-sm">
+                            <i class="fa-solid fa-crown w-4 text-center"></i> <span data-i18n="profile.manage_sub">Manage Subscription</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Edit Profile + Subscription -->
+            <div class="lg:col-span-2 space-y-6">
+
+                <!-- Edit Profile -->
+                <div class="glass-card p-6 reveal-right">
+                    <h3 class="text-white font-semibold mb-6 flex items-center gap-2">
+                        <i class="fa-solid fa-pen text-blue-400 text-sm"></i> <span data-i18n="profile.edit">Edit Profile</span>
+                    </h3>
+                    <form asp-action="UpdateProfile" method="post">
+                        @Html.AntiForgeryToken()
+                        <div class="space-y-5">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-1.5" data-i18n="profile.name">Full Name</label>
+                                <div class="relative">
+                                    <i class="fa-solid fa-user absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
+                                    <input type="text" name="fullName" value="@Model.FullName" class="auth-input" maxlength="100" required />
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-1.5" data-i18n="profile.email">Email Address</label>
+                                <div class="relative">
+                                    <i class="fa-solid fa-envelope absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
+                                    <input type="email" value="@Model.Email" class="auth-input opacity-50 cursor-not-allowed" readonly />
+                                </div>
+                                <p class="text-gray-600 text-xs mt-1">Email cannot be changed.</p>
+                            </div>
+                            <button type="submit" class="btn-primary px-6 py-2.5 text-sm">
+                                <i class="fa-solid fa-floppy-disk"></i> <span data-i18n="profile.save">Save Changes</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Subscription Card -->
+                <div class="glass-card p-6 reveal-right @(isPremium ? "" : "")">
+                    <h3 class="text-white font-semibold mb-5 flex items-center gap-2">
+                        <i class="fa-solid fa-crown text-amber-400 text-sm"></i> <span data-i18n="profile.subscription">Subscription</span>
+                    </h3>
+                    @if (isPremium)
+                    {
+                        <div class="flex items-center gap-4 p-4 rounded-xl mb-4" style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25)">
+                            <div class="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center flex-shrink-0">
+                                <i class="fa-solid fa-crown text-amber-400"></i>
+                            </div>
+                            <div>
+                                <p class="text-white font-bold">Premium Plan — Active</p>
+                                @if (Model.Subscription?.EndDate.HasValue == true)
+                                {
+                                    <p class="text-amber-300 text-sm">Renews @Model.Subscription.EndDate.Value.ToString("MMM dd, yyyy")</p>
+                                }
+                                else
+                                {
+                                    <p class="text-amber-300 text-sm">$19 / month &bull; Active subscription</p>
+                                }
+                            </div>
+                        </div>
+                        <p class="text-gray-500 text-xs">To cancel your subscription, please contact support.</p>
+                    }
+                    else
+                    {
+                        <div class="flex items-center gap-4 p-4 rounded-xl mb-5" style="background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.2)">
+                            <div class="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+                                <i class="fa-solid fa-user text-blue-400"></i>
+                            </div>
+                            <div>
+                                <p class="text-white font-bold">Free Plan</p>
+                                <p class="text-gray-400 text-sm">Upgrade to unlock AI trip planning and more.</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 mb-5 text-sm">
+                            <div class="flex items-center gap-2 text-green-400"><i class="fa-solid fa-check"></i> Browse destinations</div>
+                            <div class="flex items-center gap-2 text-green-400"><i class="fa-solid fa-check"></i> View hotels & flights</div>
+                            <div class="flex items-center gap-2 text-gray-600"><i class="fa-solid fa-xmark"></i> AI trip planner</div>
+                            <div class="flex items-center gap-2 text-gray-600"><i class="fa-solid fa-xmark"></i> AI chat assistant</div>
+                        </div>
+                        <a asp-controller="Subscription" asp-action="Index" class="btn-primary px-6 py-2.5 text-sm inline-flex">
+                            <i class="fa-solid fa-crown"></i> <span data-i18n="profile.upgrade">Upgrade to Premium — $19/mo</span>
+                        </a>
+                    }
+                </div>
+
+                <!-- Danger Zone -->
+                <div class="glass-card p-6 reveal-right" style="border-color:rgba(239,68,68,0.15);">
+                    <h3 class="text-red-400 font-semibold mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-triangle-exclamation text-sm"></i> <span data-i18n="profile.account">Account Actions</span>
+                    </h3>
+                    <div class="flex flex-wrap gap-3">
+                        <form asp-controller="Account" asp-action="Logout" method="post" class="inline">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn-outline text-sm px-4 py-2 border-red-500/30 text-red-400 hover:border-red-500 hover:bg-red-500/10">
+                                <i class="fa-solid fa-right-from-bracket text-xs mr-1"></i> <span data-i18n="profile.signout">Sign Out</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

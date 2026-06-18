@@ -1,0 +1,85 @@
+@model List<TravelAI.Models.Flight>
+@{
+    ViewData["Title"] = "Flights";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="pt-24 pb-16 min-h-screen">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-10">
+            <div class="section-badge"><i class="fa-solid fa-plane-departure"></i> <span data-i18n="flights.badge">Flights</span></div>
+            <h1 class="section-title mt-3"><span data-i18n="flights.title1">Find the</span> <span class="gradient-text" data-i18n="flights.title2">Best Flights</span></h1>
+        </div>
+
+        <form method="get" class="glass-card p-6 mb-10">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="relative">
+                    <i class="fa-solid fa-plane-departure absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
+                    <input type="text" name="origin" value="@Context.Request.Query["origin"]" class="search-input pl-9" placeholder="From (city or code)" data-i18n-placeholder="flights.from_ph" />
+                </div>
+                <div class="relative">
+                    <i class="fa-solid fa-plane-arrival absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
+                    <input type="text" name="destination" value="@Context.Request.Query["destination"]" class="search-input pl-9" placeholder="To (city or code)" data-i18n-placeholder="flights.to_ph" />
+                </div>
+                <select name="flightClass" class="search-input">
+                    <option value="" data-i18n="flights.any_class">Any Class</option>
+                    <option value="Economy" selected="@(Context.Request.Query["flightClass"] == "Economy" ? "selected" : null)" data-i18n="flights.economy">Economy</option>
+                    <option value="Business" selected="@(Context.Request.Query["flightClass"] == "Business" ? "selected" : null)" data-i18n="flights.business">Business</option>
+                    <option value="First" selected="@(Context.Request.Query["flightClass"] == "First" ? "selected" : null)" data-i18n="flights.first">First Class</option>
+                </select>
+                <button type="submit" class="btn-primary justify-center py-2.5">
+                    <i class="fa-solid fa-magnifying-glass"></i> <span data-i18n="flights.search">Search Flights</span>
+                </button>
+            </div>
+        </form>
+
+        <div class="space-y-4">
+            @if (!Model.Any())
+            {
+                <div class="text-center py-24">
+                    <i class="fa-solid fa-plane text-6xl text-gray-700 mb-6 block"></i>
+                    <p class="text-gray-400 text-lg" data-i18n="flights.no_results">No flights found. Try a different search.</p>
+                </div>
+            }
+            @foreach (var flight in Model)
+            {
+                <a asp-action="Details" asp-route-id="@flight.Id" class="flight-card block">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/20 to-blue-700/20 border border-blue-500/20 flex items-center justify-center flex-shrink-0">
+                            <i class="fa-solid fa-plane text-blue-400 text-lg"></i>
+                        </div>
+                        <div>
+                            <p class="text-white font-bold text-sm">@flight.Airline</p>
+                            <p class="text-gray-500 text-xs">@flight.AirlineCode &bull; @flight.Class</p>
+                        </div>
+                    </div>
+                    <div class="flight-route flex-1 mx-4">
+                        <div class="text-center">
+                            <p class="text-xl font-black text-white">@flight.OriginCode</p>
+                            <p class="text-xs text-gray-500">@flight.DepartureTime.ToString("HH:mm")</p>
+                        </div>
+                        <div class="flight-line flex-1 relative">
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="bg-gray-950 px-2 flex flex-col items-center">
+                                    <i class="fa-solid fa-plane text-blue-500 text-xs"></i>
+                                    <span class="text-gray-600 text-xs mt-0.5">@(flight.DurationMinutes / 60)h @(flight.DurationMinutes % 60)m</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-xl font-black text-white">@flight.DestinationCode</p>
+                            <p class="text-xs text-gray-500">@flight.ArrivalTime.ToString("HH:mm")</p>
+                        </div>
+                    </div>
+                    <div class="text-right flex-shrink-0">
+                        <div class="text-2xl font-black text-blue-400">$@flight.Price</div>
+                        <div class="flex items-center gap-2 justify-end mt-1">
+                            @if (flight.IsDirectFlight) { <span class="badge-direct">Direct</span> }
+                            <span class="text-gray-500 text-xs">@flight.SeatsAvailable seats left</span>
+                        </div>
+                    </div>
+                </a>
+            }
+        </div>
+    </div>
+</div>

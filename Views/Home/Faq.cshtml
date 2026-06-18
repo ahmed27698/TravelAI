@@ -1,0 +1,104 @@
+@{
+    ViewData["Title"] = "FAQ";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="pt-24 pb-16 min-h-screen">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <!-- Header -->
+        <div class="text-center mb-12 reveal-up">
+            <div class="section-badge"><i class="fa-solid fa-circle-question"></i> <span data-i18n="faq.page.badge">Help Center</span></div>
+            <h1 class="text-4xl md:text-5xl font-bold text-white mt-4">
+                <span data-i18n="faq.page.title1">Frequently Asked</span> <span class="gradient-text" data-i18n="faq.page.title2">Questions</span>
+            </h1>
+            <p class="text-gray-400 mt-4 text-lg max-w-xl mx-auto" data-i18n="faq.page.subtitle">Everything you need to know about TravelAI. Can't find the answer? <a asp-controller="Home" asp-action="Contact" class="text-blue-400 hover:text-blue-300 transition-colors">Contact us.</a></p>
+        </div>
+
+        @{
+            var categories = new[]
+            {
+                new {
+                    Icon = "fa-robot", Label = "AI Assistant", Color = "text-blue-400", Bg = "bg-blue-500/10",
+                    Items = new[]
+                    {
+                        new { Q = "What is the TravelAI assistant?", A = "TravelAI's assistant is powered by Llama 3.3 (70B) via Groq — a state-of-the-art large language model optimised for travel planning. It can recommend destinations, build day-by-day itineraries, estimate budgets, compare hotels and flights, and answer any travel question in real time." },
+                        new { Q = "How accurate is the AI travel advice?", A = "The AI provides expert-level guidance based on a vast knowledge base of travel information up to its training date. For the most up-to-date prices and availability, always verify through official booking platforms before making reservations." },
+                        new { Q = "Is my conversation with the AI private?", A = "Yes. Your chat history is only visible to you and is stored securely linked to your account. We do not share individual conversations with third parties. See our Privacy Policy for full details." },
+                        new { Q = "Can the AI book flights or hotels for me?", A = "Currently the AI provides recommendations and planning guidance. Actual bookings must be completed through the airline, hotel, or third-party booking platform directly. Premium users will receive direct booking integration in a future update." },
+                    }
+                },
+                new {
+                    Icon = "fa-credit-card", Label = "Plans & Billing", Color = "text-amber-400", Bg = "bg-amber-500/10",
+                    Items = new[]
+                    {
+                        new { Q = "What's included in the Free plan?", A = "The Free plan gives you access to all destination guides, flight and hotel search, activity listings, and limited AI assistant usage (up to 20 messages per day). It's perfect for casual trip browsing and inspiration." },
+                        new { Q = "What extra features does Premium include?", A = "Premium unlocks unlimited AI chat, advanced search filters, PDF itinerary export, priority support, exclusive deals, and early access to new features. Premium subscribers also get a personalised trip planner with real-time price alerts." },
+                        new { Q = "How do I cancel my subscription?", A = "You can cancel anytime from your Account → Subscription page. Cancellation takes effect at the end of your current billing cycle — you keep full access until then. We do not charge cancellation fees." },
+                        new { Q = "Do you offer refunds?", A = "We offer a 7-day money-back guarantee for new Premium subscribers. If you're not satisfied within the first 7 days of upgrading, contact us at support@travelai.com and we'll process a full refund." },
+                    }
+                },
+                new {
+                    Icon = "fa-plane", Label = "Travel Planning", Color = "text-green-400", Bg = "bg-green-500/10",
+                    Items = new[]
+                    {
+                        new { Q = "How do I plan a trip with TravelAI?", A = "Start by entering your destination in the hero search bar, or open the AI chat and describe your ideal trip (e.g. '7 days in Japan, budget $2,000, love food and history'). The AI will build a personalised itinerary. You can then browse Hotels, Flights, and Activities sections to refine your choices." },
+                        new { Q = "Can I plan trips for multiple destinations?", A = "Absolutely. You can ask the AI to plan multi-city or round-the-world itineraries. Just describe all the places you want to visit and any constraints (time, budget, travel style) and the AI will optimise the route for you." },
+                        new { Q = "Are the flight prices shown real-time?", A = "Flight prices shown are indicative and sourced from our data partners. Prices change constantly — always click through to the airline or booking platform to see the confirmed current fare before booking." },
+                        new { Q = "Which countries does TravelAI cover?", A = "TravelAI covers destinations worldwide. Our database includes detailed guides for 190+ countries, 10,000+ hotels, 5,000+ activities, and live flight routes from hundreds of airlines." },
+                    }
+                },
+                new {
+                    Icon = "fa-user-shield", Label = "Account & Security", Color = "text-purple-400", Bg = "bg-purple-500/10",
+                    Items = new[]
+                    {
+                        new { Q = "How do I reset my password?", A = "Go to the Login page and click 'Forgot password?'. Enter your registered email address and follow the instructions in the reset email. The reset link is valid for 1 hour." },
+                        new { Q = "Can I change my email address?", A = "Email changes can be requested by contacting our support team at support@travelai.com. For security reasons, we'll verify your identity before making any changes to your account email." },
+                        new { Q = "How is my data protected?", A = "All data is encrypted in transit (TLS 1.3) and at rest. We use industry-standard security practices, regular security audits, and comply with applicable data protection regulations. See our Privacy Policy for full details." },
+                        new { Q = "Can I delete my account?", A = "Yes. You can request account deletion by contacting support@travelai.com. We'll permanently delete your account and all associated data within 30 days. This action is irreversible." },
+                    }
+                },
+            };
+        }
+
+        <div class="space-y-8">
+            @foreach (var cat in categories)
+            {
+                <div class="reveal-up">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-9 h-9 rounded-xl @cat.Bg flex items-center justify-center flex-shrink-0">
+                            <i class="fa-solid @cat.Icon @cat.Color"></i>
+                        </div>
+                        <h2 class="text-lg font-bold text-white">@cat.Label</h2>
+                    </div>
+                    <div class="space-y-2">
+                        @foreach (var item in cat.Items)
+                        {
+                            <div class="faq-item glass-card">
+                                <button class="faq-question w-full text-left px-5 py-4 flex items-center justify-between gap-4">
+                                    <span class="text-sm font-medium text-white">@item.Q</span>
+                                    <i class="fa-solid fa-chevron-down faq-icon text-xs flex-shrink-0 transition-transform duration-300"></i>
+                                </button>
+                                <div class="faq-answer px-5 pb-4 hidden">
+                                    <p class="text-gray-400 text-sm leading-relaxed">@item.A</p>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- CTA -->
+        <div class="mt-14 glass-card p-8 text-center reveal-up">
+            <div class="w-14 h-14 rounded-2xl bg-blue-500/10 flex items-center justify-center mx-auto mb-4">
+                <i class="fa-solid fa-headset text-blue-400 text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2" data-i18n="faq.still">Still have questions?</h3>
+            <p class="text-gray-400 text-sm mb-6" data-i18n="faq.still_sub">Our support team typically responds within a few hours.</p>
+            <a asp-controller="Home" asp-action="Contact" class="btn-primary px-8 py-3 inline-flex">
+                <i class="fa-solid fa-paper-plane mr-2"></i> <span data-i18n="faq.contact">Contact Support</span>
+            </a>
+        </div>
+    </div>
+</div>

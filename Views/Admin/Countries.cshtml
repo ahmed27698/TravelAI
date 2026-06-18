@@ -1,0 +1,218 @@
+@model List<TravelAI.Models.Country>
+@{
+    ViewData["Title"] = "Admin - Countries";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="flex relative" style="min-height:calc(100vh - 4rem);">
+    @await Html.PartialAsync("_AdminSidebar")
+
+    <main class="flex-1 overflow-auto p-4 md:p-8 min-w-0">
+
+        <!-- Mobile header bar -->
+        <div class="flex items-center gap-3 mb-5 md:hidden">
+            <button onclick="openAdminSidebar()" class="p-2 rounded-lg bg-white/5 border border-white/10 text-gray-300 hover:bg-white/10 transition-colors flex-shrink-0">
+                <i class="fa-solid fa-bars text-sm"></i>
+            </button>
+            <div class="flex-1 min-w-0">
+                <h1 class="text-lg font-bold text-white leading-tight truncate">Countries</h1>
+                <p class="text-gray-500 text-xs">@Model.Count destinations</p>
+            </div>
+            <button onclick="openModal('country-modal')" class="flex items-center gap-1.5 px-3 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-lg transition-colors flex-shrink-0">
+                <i class="fa-solid fa-plus text-xs"></i> Add
+            </button>
+        </div>
+
+        <!-- Desktop header -->
+        <div class="hidden md:flex flex-row items-center justify-between gap-4 mb-8">
+            <div>
+                <h1 class="text-2xl font-bold text-white">Countries</h1>
+                <p class="text-gray-400 text-sm mt-1">@Model.Count destinations</p>
+            </div>
+            <div class="flex items-center gap-3 flex-wrap">
+                <form method="get" class="flex gap-2">
+                    <input type="text" name="search" value="@ViewBag.Search" placeholder="Search countries..."
+                           class="px-3 py-2 text-sm bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 w-52" />
+                    <button type="submit" class="px-3 py-2 bg-white/5 hover:bg-white/10 text-white text-sm rounded-lg transition-colors border border-white/10">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                    @if (!string.IsNullOrWhiteSpace(ViewBag.Search as string))
+                    {
+                        <a href="/Admin/Countries" class="px-3 py-2 bg-white/5 hover:bg-white/10 text-gray-400 text-sm rounded-lg transition-colors">Clear</a>
+                    }
+                </form>
+                <button onclick="openModal('country-modal')" class="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold rounded-lg transition-colors whitespace-nowrap shadow-lg shadow-blue-600/20">
+                    <i class="fa-solid fa-plus"></i> Add Country
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile search -->
+        <form method="get" class="flex gap-2 mb-4 md:hidden">
+            <input type="text" name="search" value="@ViewBag.Search" placeholder="Search countries..."
+                   class="flex-1 min-w-0 px-3 py-2 text-sm bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500" />
+            <button type="submit" class="px-3 py-2 bg-white/5 border border-white/10 text-white text-sm rounded-lg">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+            @if (!string.IsNullOrWhiteSpace(ViewBag.Search as string))
+            {
+                <a href="/Admin/Countries" class="px-3 py-2 bg-white/5 text-gray-400 text-sm rounded-lg">Clear</a>
+            }
+        </form>
+
+        <div class="admin-stat-card !p-0 overflow-x-auto">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th class="pl-5">Country</th>
+                        <th>Code</th>
+                        <th class="hidden sm:table-cell">Continent</th>
+                        <th>Budget/Day</th>
+                        <th class="hidden md:table-cell">Hotels</th>
+                        <th class="hidden md:table-cell">Activities</th>
+                        <th class="hidden lg:table-cell">Rating</th>
+                        <th class="hidden lg:table-cell">Popular</th>
+                        <th class="text-right pr-5">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr><td colspan="9" class="pl-5 py-10 text-center text-gray-500">No countries found.</td></tr>
+                    }
+                    @foreach (var c in Model)
+                    {
+                        <tr>
+                            <td class="pl-5">
+                                <div class="flex items-center gap-2.5">
+                                    <span class="fi fi-@c.Code.ToLower() text-xl rounded shadow-sm flex-shrink-0"></span>
+                                    <div>
+                                        <p class="font-medium">@c.Name</p>
+                                        <p class="text-xs text-gray-500">@c.NameAr</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><span class="admin-badge admin-badge-gray font-mono">@c.Code</span></td>
+                            <td class="text-gray-400 hidden sm:table-cell">@c.Continent</td>
+                            <td class="text-emerald-400 font-medium">$@c.AverageBudgetPerDay</td>
+                            <td class="hidden md:table-cell"><span class="admin-badge admin-badge-cyan">@c.Hotels.Count</span></td>
+                            <td class="hidden md:table-cell"><span class="admin-badge admin-badge-orange">@c.Activities.Count</span></td>
+                            <td class="hidden lg:table-cell">
+                                <div class="flex items-center gap-1 text-yellow-400 text-xs">
+                                    @for (int i = 0; i < c.Rating; i++) { <i class="fa-solid fa-star"></i> }
+                                </div>
+                            </td>
+                            <td class="hidden lg:table-cell">
+                                @if (c.IsPopular){ <span class="admin-badge admin-badge-green">Yes</span> }
+                                else { <span class="admin-badge admin-badge-gray">No</span> }
+                            </td>
+                            <td class="pr-5">
+                                <div class="flex items-center justify-end gap-1">
+                                    <form method="post" asp-action="TogglePopular" asp-route-id="@c.Id" asp-route-search="@ViewBag.Search">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" title="@(c.IsPopular ? "Remove Popular" : "Mark Popular")" class="admin-action-btn text-yellow-400 hover:bg-yellow-500/10">
+                                            <i class="fa-solid fa-star text-xs"></i>
+                                        </button>
+                                    </form>
+                                    @if (!c.Hotels.Any() && !c.Activities.Any())
+                                    {
+                                        <form method="post" asp-action="DeleteCountry" asp-route-id="@c.Id" asp-route-search="@ViewBag.Search" onsubmit="return confirm('Delete @c.Name?')">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" title="Delete Country" class="admin-action-btn text-red-400 hover:bg-red-500/10">
+                                                <i class="fa-solid fa-trash text-xs"></i>
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <span class="admin-action-btn text-gray-700 cursor-not-allowed" title="Cannot delete: has hotels or activities">
+                                            <i class="fa-solid fa-trash text-xs"></i>
+                                        </span>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+
+<!-- Add Country Modal -->
+<div id="country-modal" class="admin-modal-overlay" onclick="if(event.target===this)closeModal('country-modal')">
+    <div class="admin-modal">
+        <div class="admin-modal-header">
+            <h2 class="admin-modal-title"><i class="fa-solid fa-globe text-purple-400 mr-2"></i>Add New Country</h2>
+            <button onclick="closeModal('country-modal')" class="admin-modal-close"><i class="fa-solid fa-xmark text-sm"></i></button>
+        </div>
+        <form method="post" asp-action="CreateCountry">
+            @Html.AntiForgeryToken()
+            <div class="admin-form-grid">
+                <div class="admin-form-group">
+                    <label class="admin-form-label">Name (English) *</label>
+                    <input type="text" name="Name" required maxlength="100" placeholder="e.g. Morocco" class="admin-form-input" />
+                </div>
+                <div class="admin-form-group">
+                    <label class="admin-form-label">Country Code *</label>
+                    <input type="text" name="Code" required maxlength="10" placeholder="e.g. MA" class="admin-form-input" style="text-transform:uppercase;" />
+                </div>
+                <div class="admin-form-group">
+                    <label class="admin-form-label">Continent *</label>
+                    <select name="Continent" required class="admin-form-input admin-form-select">
+                        <option value="">Select…</option>
+                        <option>Africa</option>
+                        <option>Asia</option>
+                        <option>Europe</option>
+                        <option>Americas</option>
+                        <option>Oceania</option>
+                        <option>Antarctica</option>
+                    </select>
+                </div>
+                <div class="admin-form-group">
+                    <label class="admin-form-label">Budget / Day ($)</label>
+                    <input type="number" name="AverageBudgetPerDay" min="0" step="0.01" placeholder="100" class="admin-form-input" />
+                </div>
+                <div class="admin-form-group">
+                    <label class="admin-form-label">Rating (1–5)</label>
+                    <input type="number" name="Rating" min="1" max="5" step="1" value="5" class="admin-form-input" />
+                </div>
+                <div class="admin-form-group">
+                    <label class="admin-form-label">Arabic Name</label>
+                    <input type="text" name="NameAr" maxlength="100" placeholder="e.g. المغرب" class="admin-form-input" />
+                </div>
+                <div class="admin-form-group">
+                    <label class="admin-form-label">French Name</label>
+                    <input type="text" name="NameFr" maxlength="100" placeholder="e.g. Maroc" class="admin-form-input" />
+                </div>
+                <div class="admin-form-group">
+                    <label class="admin-form-label">Spanish Name</label>
+                    <input type="text" name="NameEs" maxlength="100" placeholder="e.g. Marruecos" class="admin-form-input" />
+                </div>
+                <div class="admin-form-group" style="grid-column:1/-1">
+                    <label class="admin-form-label">Image URL</label>
+                    <input type="url" name="ImageUrl" placeholder="https://images.unsplash.com/..." class="admin-form-input" />
+                </div>
+                <div class="admin-form-group" style="grid-column:1/-1">
+                    <label class="admin-form-label">Description</label>
+                    <input type="text" name="Description" maxlength="300" placeholder="Short tagline for this country" class="admin-form-input" />
+                </div>
+                <div class="admin-form-group" style="grid-column:1/-1">
+                    <div class="admin-form-checks">
+                        <label class="admin-form-check"><input type="checkbox" name="IsPopular" value="true" /> Mark as Popular</label>
+                    </div>
+                </div>
+            </div>
+            <div class="admin-form-footer">
+                <button type="button" onclick="closeModal('country-modal')" class="admin-btn-cancel">Cancel</button>
+                <button type="submit" class="admin-btn-submit"><i class="fa-solid fa-plus mr-1.5 text-xs"></i>Add Country</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openModal(id) { document.getElementById(id).classList.add('open'); document.body.style.overflow = 'hidden'; }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow = ''; }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.admin-modal-overlay.open').forEach(m => m.classList.remove('open')); });
+</script>

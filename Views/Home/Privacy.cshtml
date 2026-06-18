@@ -1,0 +1,69 @@
+@{
+    ViewData["Title"] = "Privacy Policy";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="pt-24 pb-16 min-h-screen">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="text-center mb-12 reveal-up">
+            <div class="section-badge"><i class="fa-solid fa-shield-halved"></i> Legal</div>
+            <h1 class="section-title mt-3">Privacy <span class="gradient-text">Policy</span></h1>
+            <p class="text-gray-500 text-sm mt-3">Last updated: June 2026</p>
+        </div>
+
+        <div class="space-y-6 reveal-up">
+            @{
+                var sections = new[]
+                {
+                    ("fa-database", "Information We Collect",
+                     "We collect information you provide when registering (name, email, password hash) and usage data such as pages visited, searches performed, and features used. We do not collect payment card details directly — payments are processed by certified third-party providers."),
+
+                    ("fa-lock", "How We Use Your Information",
+                     "Your information is used to provide and improve TravelAI services, personalise your experience, send transactional emails (account confirmation, password reset), and — with your consent — send travel recommendations and promotional content."),
+
+                    ("fa-share-nodes", "Information Sharing",
+                     "We do not sell your personal data. We share data only with service providers who help us operate the platform (database hosting, email delivery, analytics), all of whom are bound by strict data processing agreements."),
+
+                    ("fa-cookie", "Cookies & Tracking",
+                     "We use essential cookies for authentication and session management, and optional analytics cookies to understand how users interact with TravelAI. You can manage cookie preferences in your browser settings."),
+
+                    ("fa-shield-check", "Data Security",
+                     "Passwords are stored using BCrypt hashing with a work factor of 12. All data is encrypted in transit via TLS 1.3. Our Neon PostgreSQL database uses SSL with certificate verification."),
+
+                    ("fa-user-pen", "Your Rights",
+                     "You have the right to access, correct, or delete your personal data at any time. To exercise these rights, contact us at privacy@travelai.com. We will respond within 30 days."),
+
+                    ("fa-calendar", "Data Retention",
+                     "Account data is retained while your account is active. After account deletion, personal data is purged within 30 days. Anonymised analytics data may be retained indefinitely."),
+
+                    ("fa-child", "Children's Privacy",
+                     "TravelAI is not directed at children under 13. We do not knowingly collect data from children. If you believe a child has provided us with personal data, please contact us immediately."),
+                };
+            }
+
+            @foreach (var (icon, title, body) in sections)
+            {
+                <div class="glass-card p-6">
+                    <h2 class="text-white font-bold text-lg mb-3 flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-blue-500/15 flex items-center justify-center flex-shrink-0">
+                            <i class="fa-solid @icon text-blue-400 text-sm"></i>
+                        </div>
+                        @title
+                    </h2>
+                    <p class="text-gray-400 leading-relaxed text-sm">@body</p>
+                </div>
+            }
+
+            <!-- Contact -->
+            <div class="glass-card p-6 text-center" style="border-color:rgba(37,99,235,0.3);background:rgba(37,99,235,0.06);">
+                <i class="fa-solid fa-envelope-open-text text-blue-400 text-2xl mb-3 block"></i>
+                <h3 class="text-white font-bold mb-2">Questions about your privacy?</h3>
+                <p class="text-gray-400 text-sm mb-4">Our data protection team is happy to help.</p>
+                <a href="mailto:privacy@travelai.com" class="btn-primary px-6 py-2.5 text-sm">
+                    <i class="fa-solid fa-envelope"></i> Contact Privacy Team
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

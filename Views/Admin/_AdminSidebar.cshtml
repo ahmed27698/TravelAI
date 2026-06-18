@@ -1,0 +1,74 @@
+@{
+    var action = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+}
+
+<div id="admin-sidebar-overlay" class="admin-sidebar-overlay" onclick="closeAdminSidebar()"></div>
+
+<aside id="admin-sidebar" class="admin-sidebar">
+    <div class="px-3 py-3 mb-1">
+        <div class="flex items-center justify-between mb-1">
+            <div class="flex items-center gap-2">
+                <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center">
+                    <i class="fa-solid fa-shield-halved text-white text-xs"></i>
+                </div>
+                <span class="text-sm font-bold text-white">Admin Panel</span>
+            </div>
+            <button onclick="closeAdminSidebar()" class="md:hidden w-7 h-7 rounded-lg flex items-center justify-center text-gray-500 hover:text-gray-300 hover:bg-white/5 transition-colors">
+                <i class="fa-solid fa-xmark text-sm"></i>
+            </button>
+        </div>
+        <p class="text-xs text-gray-500 pl-9">@User.Identity?.Name</p>
+    </div>
+    <div class="h-px bg-white/5 mx-3 mb-2"></div>
+    <nav class="space-y-0.5 px-1.5">
+        <a href="/Admin" class="admin-nav-link @(action == "Index" ? "active" : "")">
+            <i class="fa-solid fa-gauge-high w-4 text-center"></i>
+            <span>Dashboard</span>
+        </a>
+        <a href="/Admin/Users" class="admin-nav-link @(action == "Users" ? "active" : "")">
+            <i class="fa-solid fa-users w-4 text-center"></i>
+            <span>Users</span>
+        </a>
+        <div class="h-px bg-white/5 my-1.5 mx-1"></div>
+        <p class="text-xs text-gray-600 uppercase tracking-widest px-2 py-1 font-semibold">Content</p>
+        <a href="/Admin/Countries" class="admin-nav-link @(action == "Countries" ? "active" : "")">
+            <i class="fa-solid fa-globe w-4 text-center"></i>
+            <span>Countries</span>
+        </a>
+        <a href="/Admin/Hotels" class="admin-nav-link @(action == "Hotels" ? "active" : "")">
+            <i class="fa-solid fa-hotel w-4 text-center"></i>
+            <span>Hotels</span>
+        </a>
+        <a href="/Admin/Flights" class="admin-nav-link @(action == "Flights" ? "active" : "")">
+            <i class="fa-solid fa-plane w-4 text-center"></i>
+            <span>Flights</span>
+        </a>
+        <a href="/Admin/Activities" class="admin-nav-link @(action == "Activities" ? "active" : "")">
+            <i class="fa-solid fa-map-pin w-4 text-center"></i>
+            <span>Activities</span>
+        </a>
+        <div class="h-px bg-white/5 my-1.5 mx-1"></div>
+        <p class="text-xs text-gray-600 uppercase tracking-widest px-2 py-1 font-semibold">Business</p>
+        <a href="/Admin/Subscriptions" class="admin-nav-link @(action == "Subscriptions" ? "active" : "")">
+            <i class="fa-solid fa-credit-card w-4 text-center"></i>
+            <span>Subscriptions</span>
+        </a>
+        <a href="/" class="admin-nav-link text-gray-500">
+            <i class="fa-solid fa-arrow-left w-4 text-center"></i>
+            <span>Back to Site</span>
+        </a>
+    </nav>
+</aside>
+
+<script>
+    function openAdminSidebar() {
+        document.getElementById('admin-sidebar').classList.add('admin-open');
+        document.getElementById('admin-sidebar-overlay').classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeAdminSidebar() {
+        document.getElementById('admin-sidebar').classList.remove('admin-open');
+        document.getElementById('admin-sidebar-overlay').classList.remove('open');
+        document.body.style.overflow = '';
+    }
+</script>

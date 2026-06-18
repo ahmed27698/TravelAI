@@ -1,0 +1,227 @@
+@model List<TravelAI.Models.Flight>
+@{
+    ViewData["Title"] = "Admin - Flights";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="flex relative" style="min-height:calc(100vh - 4rem);">
+    @await Html.PartialAsync("_AdminSidebar")
+
+    <main class="flex-1 overflow-auto p-4 md:p-8 min-w-0">
+
+        <!-- Mobile header bar -->
+        <div class="flex items-center gap-3 mb-5 md:hidden">
+            <button onclick="openAdminSidebar()" class="p-2 rounded-lg bg-white/5 border border-white/10 text-gray-300 hover:bg-white/10 transition-colors flex-shrink-0">
+                <i class="fa-solid fa-bars text-sm"></i>
+            </button>
+            <div class="flex-1 min-w-0">
+                <h1 class="text-lg font-bold text-white leading-tight truncate">Flights</h1>
+                <p class="text-gray-500 text-xs">@Model.Count routes</p>
+            </div>
+            <button onclick="openModal('flight-modal')" class="flex items-center gap-1.5 px-3 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-lg transition-colors flex-shrink-0">
+                <i class="fa-solid fa-plus text-xs"></i> Add
+            </button>
+        </div>
+
+        <!-- Desktop header -->
+        <div class="hidden md:flex flex-row items-center justify-between gap-4 mb-8">
+            <div>
+                <h1 class="text-2xl font-bold text-white">Flights</h1>
+                <p class="text-gray-400 text-sm mt-1">@Model.Count routes</p>
+            </div>
+            <div class="flex items-center gap-3 flex-wrap">
+                <form method="get" class="flex gap-2">
+                    <input type="text" name="search" value="@ViewBag.Search" placeholder="Airline, origin or destination..."
+                           class="px-3 py-2 text-sm bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 w-64" />
+                    <button type="submit" class="px-3 py-2 bg-white/5 hover:bg-white/10 text-white text-sm rounded-lg transition-colors border border-white/10">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                    @if (!string.IsNullOrWhiteSpace(ViewBag.Search as string))
+                    {
+                        <a href="/Admin/Flights" class="px-3 py-2 bg-white/5 hover:bg-white/10 text-gray-400 text-sm rounded-lg transition-colors">Clear</a>
+                    }
+                </form>
+                <button onclick="openModal('flight-modal')" class="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold rounded-lg transition-colors whitespace-nowrap shadow-lg shadow-blue-600/20">
+                    <i class="fa-solid fa-plus"></i> Add Flight
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile search -->
+        <form method="get" class="flex gap-2 mb-4 md:hidden">
+            <input type="text" name="search" value="@ViewBag.Search" placeholder="Search flights..."
+                   class="flex-1 min-w-0 px-3 py-2 text-sm bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500" />
+            <button type="submit" class="px-3 py-2 bg-white/5 border border-white/10 text-white text-sm rounded-lg">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+            @if (!string.IsNullOrWhiteSpace(ViewBag.Search as string))
+            {
+                <a href="/Admin/Flights" class="px-3 py-2 bg-white/5 text-gray-400 text-sm rounded-lg">Clear</a>
+            }
+        </form>
+
+        <div class="admin-stat-card !p-0 overflow-x-auto">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th class="pl-5">Airline</th>
+                        <th>Route</th>
+                        <th class="hidden sm:table-cell">Departure</th>
+                        <th class="hidden md:table-cell">Duration</th>
+                        <th>Price</th>
+                        <th class="hidden lg:table-cell">Class</th>
+                        <th class="hidden lg:table-cell">Seats</th>
+                        <th class="hidden xl:table-cell">Type</th>
+                        <th class="hidden xl:table-cell">Featured</th>
+                        <th class="text-right pr-5">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr><td colspan="10" class="pl-5 py-10 text-center text-gray-500">No flights found.</td></tr>
+                    }
+                    @foreach (var f in Model)
+                    {
+                        var durationH = f.DurationMinutes / 60;
+                        var durationM = f.DurationMinutes % 60;
+                        <tr>
+                            <td class="pl-5">
+                                <p class="font-medium">@f.Airline</p>
+                                <p class="text-xs text-gray-500 font-mono">@f.AirlineCode</p>
+                            </td>
+                            <td>
+                                <div class="flex items-center gap-1.5 text-sm">
+                                    <span class="font-mono font-medium text-blue-300">@f.OriginCode</span>
+                                    <i class="fa-solid fa-arrow-right text-gray-600 text-xs"></i>
+                                    <span class="font-mono font-medium text-purple-300">@f.DestinationCode</span>
+                                </div>
+                                <p class="text-xs text-gray-500 hidden sm:block">@f.Origin → @f.Destination</p>
+                            </td>
+                            <td class="text-gray-300 text-xs whitespace-nowrap hidden sm:table-cell">
+                                @f.DepartureTime.ToString("MMM dd, yyyy")<br /><span class="text-gray-500">@f.DepartureTime.ToString("HH:mm")</span>
+                            </td>
+                            <td class="text-gray-400 text-xs whitespace-nowrap hidden md:table-cell">@durationH h @durationM m</td>
+                            <td class="text-emerald-400 font-medium">$@f.Price</td>
+                            <td class="hidden lg:table-cell">
+                                @if (f.Class == "Business"){ <span class="admin-badge admin-badge-purple">Business</span> }
+                                else if (f.Class == "First"){ <span class="admin-badge admin-badge-yellow">First</span> }
+                                else { <span class="admin-badge admin-badge-gray">Economy</span> }
+                            </td>
+                            <td class="hidden lg:table-cell">
+                                <span class="admin-badge @(f.SeatsAvailable > 20 ? "admin-badge-green" : f.SeatsAvailable > 5 ? "admin-badge-yellow" : "admin-badge-red")">@f.SeatsAvailable</span>
+                            </td>
+                            <td class="hidden xl:table-cell">
+                                @if (f.IsDirectFlight){ <span class="admin-badge admin-badge-green">Direct</span> }
+                                else { <span class="admin-badge admin-badge-gray">Connecting</span> }
+                            </td>
+                            <td class="hidden xl:table-cell">
+                                @if (f.IsFeatured){ <span class="admin-badge admin-badge-blue">Featured</span> }
+                                else { <span class="admin-badge admin-badge-gray">No</span> }
+                            </td>
+                            <td class="pr-5">
+                                <div class="flex items-center justify-end gap-1">
+                                    <form method="post" asp-action="ToggleFlightFeatured" asp-route-id="@f.Id" asp-route-search="@ViewBag.Search">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" title="@(f.IsFeatured ? "Remove Featured" : "Mark Featured")" class="admin-action-btn text-blue-400 hover:bg-blue-500/10">
+                                            <i class="fa-solid fa-bolt text-xs"></i>
+                                        </button>
+                                    </form>
+                                    <form method="post" asp-action="DeleteFlight" asp-route-id="@f.Id" asp-route-search="@ViewBag.Search" onsubmit="return confirm('Delete this flight?')">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" title="Delete Flight" class="admin-action-btn text-red-400 hover:bg-red-500/10">
+                                            <i class="fa-solid fa-trash text-xs"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+
+<!-- Add Flight Modal -->
+<div id="flight-modal" class="admin-modal-overlay" onclick="if(event.target===this)closeModal('flight-modal')">
+    <div class="admin-modal">
+        <div class="admin-modal-header">
+            <h2 class="admin-modal-title"><i class="fa-solid fa-plane text-sky-400 mr-2"></i>Add New Flight</h2>
+            <button onclick="closeModal('flight-modal')" class="admin-modal-close"><i class="fa-solid fa-xmark text-sm"></i></button>
+        </div>
+        <form method="post" asp-action="CreateFlight">
+            @Html.AntiForgeryToken()
+            <div class="admin-form-grid">
+                <div class="admin-form-group">
+                    <label class="admin-form-label">Airline *</label>
+                    <input type="text" name="Airline" required maxlength="100" placeholder="e.g. Emirates" class="admin-form-input" />
+                </div>
+                <div class="admin-form-group">
+                    <label class="admin-form-label">Airline Code</label>
+                    <input type="text" name="AirlineCode" maxlength="10" placeholder="e.g. EK" class="admin-form-input" style="text-transform:uppercase;" />
+                </div>
+                <div class="admin-form-group">
+                    <label class="admin-form-label">Origin City *</label>
+                    <input type="text" name="Origin" required placeholder="e.g. Dubai" class="admin-form-input" />
+                </div>
+                <div class="admin-form-group">
+                    <label class="admin-form-label">Origin Code *</label>
+                    <input type="text" name="OriginCode" required maxlength="10" placeholder="e.g. DXB" class="admin-form-input" style="text-transform:uppercase;" />
+                </div>
+                <div class="admin-form-group">
+                    <label class="admin-form-label">Destination City *</label>
+                    <input type="text" name="Destination" required placeholder="e.g. Cairo" class="admin-form-input" />
+                </div>
+                <div class="admin-form-group">
+                    <label class="admin-form-label">Destination Code *</label>
+                    <input type="text" name="DestinationCode" required maxlength="10" placeholder="e.g. CAI" class="admin-form-input" style="text-transform:uppercase;" />
+                </div>
+                <div class="admin-form-group">
+                    <label class="admin-form-label">Departure *</label>
+                    <input type="datetime-local" name="DepartureTime" required class="admin-form-input" />
+                </div>
+                <div class="admin-form-group">
+                    <label class="admin-form-label">Arrival *</label>
+                    <input type="datetime-local" name="ArrivalTime" required class="admin-form-input" />
+                </div>
+                <div class="admin-form-group">
+                    <label class="admin-form-label">Duration (minutes) *</label>
+                    <input type="number" name="DurationMinutes" required min="1" placeholder="150" class="admin-form-input" />
+                </div>
+                <div class="admin-form-group">
+                    <label class="admin-form-label">Price ($) *</label>
+                    <input type="number" name="Price" required min="0" step="0.01" placeholder="320" class="admin-form-input" />
+                </div>
+                <div class="admin-form-group">
+                    <label class="admin-form-label">Class</label>
+                    <select name="Class" class="admin-form-input admin-form-select">
+                        <option value="Economy">Economy</option>
+                        <option value="Business">Business</option>
+                        <option value="First">First Class</option>
+                    </select>
+                </div>
+                <div class="admin-form-group">
+                    <label class="admin-form-label">Seats Available</label>
+                    <input type="number" name="SeatsAvailable" min="0" value="50" class="admin-form-input" />
+                </div>
+                <div class="admin-form-group" style="grid-column:1/-1">
+                    <div class="admin-form-checks">
+                        <label class="admin-form-check"><input type="checkbox" name="IsDirectFlight" value="true" checked /> Direct Flight</label>
+                        <label class="admin-form-check"><input type="checkbox" name="IsFeatured" value="true" /> Featured</label>
+                    </div>
+                </div>
+            </div>
+            <div class="admin-form-footer">
+                <button type="button" onclick="closeModal('flight-modal')" class="admin-btn-cancel">Cancel</button>
+                <button type="submit" class="admin-btn-submit"><i class="fa-solid fa-plus mr-1.5 text-xs"></i>Add Flight</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openModal(id) { document.getElementById(id).classList.add('open'); document.body.style.overflow = 'hidden'; }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow = ''; }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.admin-modal-overlay.open').forEach(m => m.classList.remove('open')); });
+</script>

@@ -1,0 +1,191 @@
+@model List<TravelAI.Models.Subscription>
+@{
+    ViewData["Title"] = "Admin - Subscriptions";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="flex relative" style="min-height:calc(100vh - 4rem);">
+    @await Html.PartialAsync("_AdminSidebar")
+
+    <main class="flex-1 overflow-auto p-6 md:p-8 min-w-0">
+        <div class="mb-8">
+            <h1 class="text-2xl font-bold text-white">Subscriptions & Pricing</h1>
+            <p class="text-gray-400 text-sm mt-1">Manage user subscription plans</p>
+        </div>
+
+        <!-- Stats Row -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+            <div class="admin-stat-card">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-xs text-gray-400 uppercase tracking-wide">Free Plan</span>
+                    <div class="w-9 h-9 rounded-xl bg-gray-500/10 flex items-center justify-center">
+                        <i class="fa-solid fa-circle text-gray-400 text-sm"></i>
+                    </div>
+                </div>
+                <p class="text-3xl font-bold text-white">@ViewBag.FreeCount</p>
+                <p class="text-xs text-gray-500 mt-1">Free tier users</p>
+            </div>
+            <div class="admin-stat-card">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-xs text-gray-400 uppercase tracking-wide">Paid Active</span>
+                    <div class="w-9 h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+                        <i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i>
+                    </div>
+                </div>
+                <p class="text-3xl font-bold text-white">@ViewBag.PaidCount</p>
+                <p class="text-xs text-gray-500 mt-1">Active paid plans</p>
+            </div>
+            <div class="admin-stat-card">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-xs text-gray-400 uppercase tracking-wide">Revenue</span>
+                    <div class="w-9 h-9 rounded-xl bg-yellow-500/10 flex items-center justify-center">
+                        <i class="fa-solid fa-dollar-sign text-yellow-400 text-sm"></i>
+                    </div>
+                </div>
+                <p class="text-3xl font-bold text-white">$@(((decimal)ViewBag.Revenue).ToString("N0"))</p>
+                <p class="text-xs text-gray-500 mt-1">From paid plans</p>
+            </div>
+        </div>
+
+        <!-- Pricing Plans Reference -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+            <div class="admin-stat-card border border-white/5">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-10 h-10 rounded-xl bg-gray-500/15 flex items-center justify-center">
+                        <i class="fa-solid fa-feather text-gray-400"></i>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-white">Free</p>
+                        <p class="text-xs text-gray-500">$0 / month</p>
+                    </div>
+                </div>
+                <ul class="text-xs text-gray-400 space-y-1">
+                    <li><i class="fa-solid fa-check text-green-400 mr-1.5"></i>Browse destinations</li>
+                    <li><i class="fa-solid fa-check text-green-400 mr-1.5"></i>Basic search</li>
+                    <li><i class="fa-solid fa-xmark text-red-400 mr-1.5"></i>AI Trip Planner</li>
+                    <li><i class="fa-solid fa-xmark text-red-400 mr-1.5"></i>AI Chat</li>
+                </ul>
+            </div>
+            <div class="admin-stat-card border border-blue-500/20">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-10 h-10 rounded-xl bg-blue-500/15 flex items-center justify-center">
+                        <i class="fa-solid fa-rocket text-blue-400"></i>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-white">Pro</p>
+                        <p class="text-xs text-gray-500">$9.99 / month</p>
+                    </div>
+                </div>
+                <ul class="text-xs text-gray-400 space-y-1">
+                    <li><i class="fa-solid fa-check text-green-400 mr-1.5"></i>Everything in Free</li>
+                    <li><i class="fa-solid fa-check text-green-400 mr-1.5"></i>AI Trip Planner</li>
+                    <li><i class="fa-solid fa-check text-green-400 mr-1.5"></i>50 AI chat messages/mo</li>
+                    <li><i class="fa-solid fa-xmark text-red-400 mr-1.5"></i>Unlimited AI chat</li>
+                </ul>
+            </div>
+            <div class="admin-stat-card border border-yellow-500/20">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-10 h-10 rounded-xl bg-yellow-500/15 flex items-center justify-center">
+                        <i class="fa-solid fa-crown text-yellow-400"></i>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-white">Premium</p>
+                        <p class="text-xs text-gray-500">$19.99 / month</p>
+                    </div>
+                </div>
+                <ul class="text-xs text-gray-400 space-y-1">
+                    <li><i class="fa-solid fa-check text-green-400 mr-1.5"></i>Everything in Pro</li>
+                    <li><i class="fa-solid fa-check text-green-400 mr-1.5"></i>Unlimited AI chat</li>
+                    <li><i class="fa-solid fa-check text-green-400 mr-1.5"></i>Priority support</li>
+                    <li><i class="fa-solid fa-check text-green-400 mr-1.5"></i>Early access features</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Filter + Table -->
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-sm font-semibold text-white">All Subscriptions (@Model.Count)</h2>
+            <div class="flex gap-2">
+                <a href="/Admin/Subscriptions" class="px-3 py-1.5 text-xs rounded-lg transition-colors @(string.IsNullOrWhiteSpace(ViewBag.Plan as string) ? "bg-blue-600 text-white" : "bg-white/5 text-gray-400 hover:bg-white/10")">All</a>
+                <a href="/Admin/Subscriptions?plan=Free" class="px-3 py-1.5 text-xs rounded-lg transition-colors @(ViewBag.Plan == "Free" ? "bg-blue-600 text-white" : "bg-white/5 text-gray-400 hover:bg-white/10")">Free</a>
+                <a href="/Admin/Subscriptions?plan=Pro" class="px-3 py-1.5 text-xs rounded-lg transition-colors @(ViewBag.Plan == "Pro" ? "bg-blue-600 text-white" : "bg-white/5 text-gray-400 hover:bg-white/10")">Pro</a>
+                <a href="/Admin/Subscriptions?plan=Premium" class="px-3 py-1.5 text-xs rounded-lg transition-colors @(ViewBag.Plan == "Premium" ? "bg-blue-600 text-white" : "bg-white/5 text-gray-400 hover:bg-white/10")">Premium</a>
+            </div>
+        </div>
+
+        <div class="admin-stat-card !p-0 overflow-x-auto">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th class="pl-5">User</th>
+                        <th>Plan</th>
+                        <th>Price</th>
+                        <th>Billing</th>
+                        <th>Started</th>
+                        <th>Expires</th>
+                        <th>Status</th>
+                        <th class="text-right pr-5">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr><td colspan="8" class="pl-5 py-8 text-center text-gray-500">No subscriptions found.</td></tr>
+                    }
+                    @foreach (var s in Model)
+                    {
+                        <tr>
+                            <td class="pl-5">
+                                <div class="flex items-center gap-2.5">
+                                    <div class="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">@(s.User?.FullName?.Substring(0, 1).ToUpper() ?? "?")</div>
+                                    <div class="min-w-0">
+                                        <p class="font-medium text-sm truncate max-w-[130px]">@(s.User?.FullName ?? "Unknown")</p>
+                                        <p class="text-xs text-gray-500 truncate max-w-[130px]">@s.User?.Email</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                @if (s.Plan == "Premium")
+                                {
+                                    <span class="admin-badge admin-badge-yellow">@s.Plan</span>
+                                }
+                                else if (s.Plan == "Pro")
+                                {
+                                    <span class="admin-badge admin-badge-blue">@s.Plan</span>
+                                }
+                                else
+                                {
+                                    <span class="admin-badge admin-badge-gray">@s.Plan</span>
+                                }
+                            </td>
+                            <td class="@(s.Price > 0 ? "text-emerald-400" : "text-gray-500") font-medium">@(s.Price > 0 ? "$" + s.Price : "Free")</td>
+                            <td class="text-gray-400 text-sm">@s.BillingCycle</td>
+                            <td class="text-gray-400 text-xs whitespace-nowrap">@s.StartDate.ToString("MMM dd, yyyy")</td>
+                            <td class="text-gray-400 text-xs whitespace-nowrap">
+                                @(s.EndDate.HasValue ? s.EndDate.Value.ToString("MMM dd, yyyy") : "—")
+                            </td>
+                            <td>
+                                @if (s.IsActive)
+                                {
+                                    <span class="admin-badge admin-badge-green">Active</span>
+                                }
+                                else
+                                {
+                                    <span class="admin-badge admin-badge-red">Inactive</span>
+                                }
+                            </td>
+                            <td class="pr-5 text-right">
+                                <form method="post" asp-action="ToggleSubActive" asp-route-id="@s.Id" asp-route-plan="@ViewBag.Plan">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" title="@(s.IsActive ? "Deactivate" : "Activate")" class="admin-action-btn @(s.IsActive ? "text-red-400 hover:bg-red-500/10" : "text-green-400 hover:bg-green-500/10")">
+                                        <i class="fa-solid @(s.IsActive ? "fa-ban" : "fa-circle-check") text-xs"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>

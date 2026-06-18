@@ -1,0 +1,68 @@
+@model TravelAI.Models.Activity
+@{
+    ViewData["Title"] = Model.Name;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="pt-16 min-h-screen">
+    <div class="relative h-80 overflow-hidden">
+        <img src="@Model.ImageUrl" alt="@Model.Name" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=1200'" />
+        <div class="absolute inset-0" style="background: linear-gradient(to top, #030712 0%, rgba(3,7,18,0.5) 60%, transparent 100%);"></div>
+        <div class="absolute bottom-8 left-0 right-0 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <span class="cat-badge mb-2 inline-block">@Model.Category</span>
+            <h1 class="text-4xl font-black text-white">@Model.Name</h1>
+            <p class="text-blue-200 mt-1 flex items-center gap-2">
+                <i class="fa-solid fa-location-dot"></i> @Model.City@(Model.Country != null ? ", " + Model.Country.Name : "")
+            </p>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2">
+                <div class="glass-card p-6 mb-6">
+                    <h2 class="text-xl font-bold text-white mb-4">About This Activity</h2>
+                    <p class="text-gray-300 leading-relaxed">@Model.Description</p>
+                </div>
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="glass-card p-4 text-center">
+                        <i class="fa-regular fa-clock text-blue-400 text-xl mb-2 block"></i>
+                        <p class="text-white font-bold">@Model.DurationHours hrs</p>
+                        <p class="text-gray-500 text-xs">Duration</p>
+                    </div>
+                    <div class="glass-card p-4 text-center">
+                        <i class="fa-solid fa-star text-amber-400 text-xl mb-2 block"></i>
+                        <p class="text-white font-bold">@Model.Rating</p>
+                        <p class="text-gray-500 text-xs">@Model.ReviewCount reviews</p>
+                    </div>
+                    <div class="glass-card p-4 text-center">
+                        <i class="fa-solid fa-users text-blue-400 text-xl mb-2 block"></i>
+                        <p class="text-white font-bold">Group</p>
+                        <p class="text-gray-500 text-xs">All group sizes</p>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="glass-card p-6 sticky top-20">
+                    <div class="text-3xl font-black text-blue-400 mb-1">$@Model.Price</div>
+                    <p class="text-gray-500 text-sm mb-6">per person</p>
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <button class="btn-primary w-full py-3 justify-center mb-3">
+                            <i class="fa-solid fa-calendar-check"></i> Book Activity
+                        </button>
+                    }
+                    else
+                    {
+                        <a asp-controller="Account" asp-action="Login" class="btn-primary w-full py-3 justify-center mb-3 block text-center">
+                            <i class="fa-solid fa-lock"></i> Sign In to Book
+                        </a>
+                    }
+                    <a asp-action="Index" class="btn-outline w-full py-2.5 justify-center block text-center">
+                        <i class="fa-solid fa-arrow-left"></i> All Activities
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

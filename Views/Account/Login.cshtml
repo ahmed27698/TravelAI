@@ -1,0 +1,94 @@
+@model TravelAI.Models.ViewModels.LoginViewModel
+@{
+    ViewData["Title"] = "Sign In";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="min-h-screen flex items-center justify-center px-4 pt-20 pb-12" style="background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(37,99,235,0.2) 0%, transparent 70%), #030712;">
+
+    <div class="w-full max-w-md">
+        <!-- Logo -->
+        <div class="text-center mb-8">
+            <a asp-controller="Home" asp-action="Index" class="inline-flex items-center gap-2 mb-6">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
+                    <i class="fa-solid fa-plane text-white"></i>
+                </div>
+                <span class="text-2xl font-bold bg-gradient-to-r from-blue-400 to-blue-200 bg-clip-text text-transparent">TravelAI</span>
+            </a>
+            <h1 class="text-3xl font-bold text-white" data-i18n="login.welcome">Welcome back</h1>
+            <p class="text-gray-400 mt-2" data-i18n="login.subtitle">Sign in to continue your journey</p>
+        </div>
+
+        <!-- Form Card -->
+        <div class="glass-card p-8">
+            @if (TempData["Message"]?.ToString() == "registered")
+            {
+                <div class="flex items-center gap-3 bg-green-500/10 border border-green-500/30 rounded-xl p-4 mb-6">
+                    <i class="fa-solid fa-circle-check text-green-400"></i>
+                    <p class="text-green-300 text-sm">Account created! Sign in below.</p>
+                </div>
+            }
+            @if (TempData["Message"]?.ToString() == "password_reset")
+            {
+                <div class="flex items-center gap-3 bg-green-500/10 border border-green-500/30 rounded-xl p-4 mb-6">
+                    <i class="fa-solid fa-circle-check text-green-400"></i>
+                    <p class="text-green-300 text-sm">Password updated successfully! Sign in with your new password.</p>
+                </div>
+            }
+
+            <div asp-validation-summary="All" class="validation-summary-errors"></div>
+
+            <form asp-action="Login" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="ReturnUrl" />
+
+                <div class="space-y-5">
+                    <div>
+                        <label asp-for="Email" class="block text-sm font-medium text-gray-300 mb-1.5" data-i18n="login.email">Email address</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-envelope absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
+                            <input asp-for="Email" class="auth-input" type="email" placeholder="you@example.com" data-i18n-placeholder="login.email" autocomplete="email" />
+                        </div>
+                        <span asp-validation-for="Email" class="field-validation-error"></span>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between items-center mb-1.5">
+                            <label asp-for="Password" class="block text-sm font-medium text-gray-300" data-i18n="login.password">Password</label>
+                            <a asp-controller="Account" asp-action="ForgotPassword" class="text-xs text-blue-400 hover:text-blue-300 transition-colors" data-i18n="login.forgot">Forgot password?</a>
+                        </div>
+                        <div class="relative">
+                            <i class="fa-solid fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
+                            <input asp-for="Password" class="auth-input" type="password" placeholder="••••••••" autocomplete="current-password" />
+                        </div>
+                        <span asp-validation-for="Password" class="field-validation-error"></span>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <input asp-for="RememberMe" type="checkbox" class="w-4 h-4 rounded border-gray-600 bg-gray-800 text-blue-500 focus:ring-blue-500 focus:ring-offset-0" id="remember" />
+                        <label for="remember" class="text-sm text-gray-400 select-none cursor-pointer" data-i18n="login.remember">Remember me for 30 days</label>
+                    </div>
+
+                    <button type="submit" class="btn-primary w-full py-3.5 text-base justify-center mt-2">
+                        <i class="fa-solid fa-right-to-bracket"></i>
+                        <span data-i18n="login.btn">Sign In</span>
+                    </button>
+                </div>
+            </form>
+
+            <div class="mt-6 text-center">
+                <p class="text-gray-500 text-sm">
+                    <span data-i18n="login.no_account">Don't have an account?</span>
+                    <a asp-controller="Account" asp-action="Register" class="text-blue-400 hover:text-blue-300 font-medium ml-1 transition-colors" data-i18n="login.create">Create one free</a>
+                </p>
+            </div>
+        </div>
+
+        <!-- Back to home -->
+        <div class="text-center mt-6">
+            <a asp-controller="Home" asp-action="Index" class="text-gray-600 hover:text-gray-400 text-sm transition-colors flex items-center justify-center gap-2">
+                <i class="fa-solid fa-arrow-left text-xs"></i> <span data-i18n="login.back">Back to Home</span>
+            </a>
+        </div>
+    </div>
+</div>

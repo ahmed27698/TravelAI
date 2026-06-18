@@ -1,0 +1,237 @@
+@model List<TravelAI.Models.Hotel>
+@{
+    ViewData["Title"] = "Admin - Hotels";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using TravelAI.Models
+
+<div class="flex relative" style="min-height:calc(100vh - 4rem);">
+    @await Html.PartialAsync("_AdminSidebar")
+
+    <main class="flex-1 overflow-auto p-4 md:p-8 min-w-0">
+
+        <!-- Mobile header bar -->
+        <div class="flex items-center gap-3 mb-5 md:hidden">
+            <button onclick="openAdminSidebar()" class="p-2 rounded-lg bg-white/5 border border-white/10 text-gray-300 hover:bg-white/10 transition-colors flex-shrink-0">
+                <i class="fa-solid fa-bars text-sm"></i>
+            </button>
+            <div class="flex-1 min-w-0">
+                <h1 class="text-lg font-bold text-white leading-tight truncate">Hotels</h1>
+                <p class="text-gray-500 text-xs">@Model.Count properties</p>
+            </div>
+            <button onclick="openModal('hotel-modal')" class="flex items-center gap-1.5 px-3 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-lg transition-colors flex-shrink-0">
+                <i class="fa-solid fa-plus text-xs"></i> Add
+            </button>
+        </div>
+
+        <!-- Desktop header -->
+        <div class="hidden md:flex flex-row items-center justify-between gap-4 mb-8">
+            <div>
+                <h1 class="text-2xl font-bold text-white">Hotels</h1>
+                <p class="text-gray-400 text-sm mt-1">@Model.Count properties</p>
+            </div>
+            <div class="flex items-center gap-3 flex-wrap">
+                <form method="get" class="flex gap-2 flex-wrap">
+                    <input type="text" name="search" value="@ViewBag.Search" placeholder="Search hotels..."
+                           class="px-3 py-2 text-sm bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 w-44" />
+                    <select name="countryId" class="px-3 py-2 text-sm bg-white/5 border border-white/10 rounded-lg text-gray-300 focus:outline-none focus:border-blue-500">
+                        <option value="">All Countries</option>
+                        @foreach (var country in (ViewBag.Countries as List<Country>) ?? new List<Country>())
+                        {
+                            if (ViewBag.CountryId?.ToString() == country.Id.ToString())
+                            {
+                                <option value="@country.Id" selected>@country.Name</option>
+                            }
+                            else
+                            {
+                                <option value="@country.Id">@country.Name</option>
+                            }
+                        }
+                    </select>
+                    <button type="submit" class="px-3 py-2 bg-white/5 hover:bg-white/10 text-white text-sm rounded-lg transition-colors border border-white/10">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                    @if (!string.IsNullOrWhiteSpace(ViewBag.Search as string) || ViewBag.CountryId != null)
+                    {
+                        <a href="/Admin/Hotels" class="px-3 py-2 bg-white/5 hover:bg-white/10 text-gray-400 text-sm rounded-lg transition-colors">Clear</a>
+                    }
+                </form>
+                <button onclick="openModal('hotel-modal')" class="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold rounded-lg transition-colors whitespace-nowrap shadow-lg shadow-blue-600/20">
+                    <i class="fa-solid fa-plus"></i> Add Hotel
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile search -->
+        <form method="get" class="flex gap-2 mb-4 md:hidden flex-wrap">
+            <input type="text" name="search" value="@ViewBag.Search" placeholder="Search hotels..."
+                   class="flex-1 min-w-0 px-3 py-2 text-sm bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500" />
+            <select name="countryId" class="px-2 py-2 text-sm bg-white/5 border border-white/10 rounded-lg text-gray-300 focus:outline-none focus:border-blue-500">
+                <option value="">All</option>
+                @foreach (var country in (ViewBag.Countries as List<Country>) ?? new List<Country>())
+                {
+                    if (ViewBag.CountryId?.ToString() == country.Id.ToString())
+                    {
+                        <option value="@country.Id" selected>@country.Name</option>
+                    }
+                    else
+                    {
+                        <option value="@country.Id">@country.Name</option>
+                    }
+                }
+            </select>
+            <button type="submit" class="px-3 py-2 bg-white/5 border border-white/10 text-white text-sm rounded-lg">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+            @if (!string.IsNullOrWhiteSpace(ViewBag.Search as string) || ViewBag.CountryId != null)
+            {
+                <a href="/Admin/Hotels" class="px-3 py-2 bg-white/5 text-gray-400 text-sm rounded-lg">Clear</a>
+            }
+        </form>
+
+        <div class="admin-stat-card !p-0 overflow-x-auto">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th class="pl-5">Hotel</th>
+                        <th>Country</th>
+                        <th class="hidden sm:table-cell">City</th>
+                        <th>Price/Night</th>
+                        <th class="hidden md:table-cell">Stars</th>
+                        <th class="hidden lg:table-cell">Rating</th>
+                        <th class="hidden lg:table-cell">Featured</th>
+                        <th class="text-right pr-5">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr><td colspan="8" class="pl-5 py-10 text-center text-gray-500">No hotels found.</td></tr>
+                    }
+                    @foreach (var h in Model)
+                    {
+                        <tr>
+                            <td class="pl-5">
+                                <div class="flex items-center gap-2.5">
+                                    <img src="@h.ImageUrl" alt="@h.Name" class="w-9 h-9 rounded-lg object-cover flex-shrink-0 bg-gray-800" onerror="this.src=''" />
+                                    <div class="min-w-0">
+                                        <p class="font-medium truncate max-w-[140px]">@h.Name</p>
+                                        @if (h.IsLuxury){ <span class="text-xs text-purple-400">Luxury</span> }
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-gray-400 text-sm">@h.Country?.Name</td>
+                            <td class="text-gray-400 text-sm hidden sm:table-cell">@h.City</td>
+                            <td class="text-emerald-400 font-medium">$@h.PricePerNight</td>
+                            <td class="hidden md:table-cell">
+                                <div class="flex gap-0.5 text-yellow-400 text-xs">
+                                    @for (int i = 0; i < (int)h.Stars; i++) { <i class="fa-solid fa-star"></i> }
+                                </div>
+                            </td>
+                            <td class="hidden lg:table-cell">
+                                <span class="admin-badge admin-badge-blue">@h.Rating.ToString("F1") <i class="fa-solid fa-star text-xs ml-0.5"></i></span>
+                            </td>
+                            <td class="hidden lg:table-cell">
+                                @if (h.IsFeatured){ <span class="admin-badge admin-badge-green">Featured</span> }
+                                else { <span class="admin-badge admin-badge-gray">No</span> }
+                            </td>
+                            <td class="pr-5">
+                                <div class="flex items-center justify-end gap-1">
+                                    <form method="post" asp-action="ToggleHotelFeatured" asp-route-id="@h.Id" asp-route-search="@ViewBag.Search">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" title="@(h.IsFeatured ? "Remove Featured" : "Mark Featured")" class="admin-action-btn text-blue-400 hover:bg-blue-500/10">
+                                            <i class="fa-solid fa-bolt text-xs"></i>
+                                        </button>
+                                    </form>
+                                    <form method="post" asp-action="DeleteHotel" asp-route-id="@h.Id" asp-route-search="@ViewBag.Search" onsubmit="return confirm('Delete @Html.Raw(h.Name.Replace("'", "\\'"))?')">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" title="Delete Hotel" class="admin-action-btn text-red-400 hover:bg-red-500/10">
+                                            <i class="fa-solid fa-trash text-xs"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+
+<!-- Add Hotel Modal -->
+<div id="hotel-modal" class="admin-modal-overlay" onclick="if(event.target===this)closeModal('hotel-modal')">
+    <div class="admin-modal">
+        <div class="admin-modal-header">
+            <h2 class="admin-modal-title"><i class="fa-solid fa-hotel text-blue-400 mr-2"></i>Add New Hotel</h2>
+            <button onclick="closeModal('hotel-modal')" class="admin-modal-close"><i class="fa-solid fa-xmark text-sm"></i></button>
+        </div>
+        <form method="post" asp-action="CreateHotel">
+            @Html.AntiForgeryToken()
+            <div class="admin-form-grid">
+                <div class="admin-form-group" style="grid-column:1/-1">
+                    <label class="admin-form-label">Hotel Name *</label>
+                    <input type="text" name="Name" required maxlength="150" placeholder="e.g. Grand Hyatt Cairo" class="admin-form-input" />
+                </div>
+                <div class="admin-form-group">
+                    <label class="admin-form-label">City *</label>
+                    <input type="text" name="City" required placeholder="e.g. Cairo" class="admin-form-input" />
+                </div>
+                <div class="admin-form-group">
+                    <label class="admin-form-label">Country *</label>
+                    <select name="CountryId" required class="admin-form-input admin-form-select">
+                        <option value="">Select country…</option>
+                        @foreach (var c in (ViewBag.Countries as List<Country>) ?? new List<Country>())
+                        {
+                            <option value="@c.Id">@c.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="admin-form-group">
+                    <label class="admin-form-label">Price / Night ($) *</label>
+                    <input type="number" name="PricePerNight" required min="0" step="0.01" placeholder="250" class="admin-form-input" />
+                </div>
+                <div class="admin-form-group">
+                    <label class="admin-form-label">Stars (1–5)</label>
+                    <input type="number" name="Stars" min="1" max="5" step="1" value="5" class="admin-form-input" />
+                </div>
+                <div class="admin-form-group">
+                    <label class="admin-form-label">Rating (0–5)</label>
+                    <input type="number" name="Rating" min="0" max="5" step="0.1" value="4.5" class="admin-form-input" />
+                </div>
+                <div class="admin-form-group">
+                    <label class="admin-form-label">Review Count</label>
+                    <input type="number" name="ReviewCount" min="0" value="0" class="admin-form-input" />
+                </div>
+                <div class="admin-form-group" style="grid-column:1/-1">
+                    <label class="admin-form-label">Image URL</label>
+                    <input type="url" name="ImageUrl" placeholder="https://images.unsplash.com/..." class="admin-form-input" />
+                </div>
+                <div class="admin-form-group" style="grid-column:1/-1">
+                    <label class="admin-form-label">Description</label>
+                    <input type="text" name="Description" maxlength="300" placeholder="Short description of the hotel" class="admin-form-input" />
+                </div>
+                <div class="admin-form-group" style="grid-column:1/-1">
+                    <label class="admin-form-label">Amenities &amp; Flags</label>
+                    <div class="admin-form-checks">
+                        <label class="admin-form-check"><input type="checkbox" name="HasPool" value="true" /> Pool</label>
+                        <label class="admin-form-check"><input type="checkbox" name="HasWifi" value="true" checked /> Wi-Fi</label>
+                        <label class="admin-form-check"><input type="checkbox" name="HasSpa" value="true" /> Spa</label>
+                        <label class="admin-form-check"><input type="checkbox" name="IsLuxury" value="true" /> Luxury</label>
+                        <label class="admin-form-check"><input type="checkbox" name="IsFeatured" value="true" /> Featured</label>
+                    </div>
+                </div>
+            </div>
+            <div class="admin-form-footer">
+                <button type="button" onclick="closeModal('hotel-modal')" class="admin-btn-cancel">Cancel</button>
+                <button type="submit" class="admin-btn-submit"><i class="fa-solid fa-plus mr-1.5 text-xs"></i>Add Hotel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openModal(id) { document.getElementById(id).classList.add('open'); document.body.style.overflow = 'hidden'; }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow = ''; }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.admin-modal-overlay.open').forEach(m => m.classList.remove('open')); });
+</script>

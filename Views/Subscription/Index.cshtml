@@ -1,0 +1,96 @@
+@{
+    ViewData["Title"] = "Premium Plans";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="pt-24 pb-16 min-h-screen" style="background: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(124,58,237,0.15) 0%, transparent 70%), #030712;">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        @if (TempData["Message"] != null)
+        {
+            <div class="flex items-center gap-3 bg-green-500/10 border border-green-500/30 rounded-xl p-4 mb-8">
+                <i class="fa-solid fa-circle-check text-green-400"></i>
+                <p class="text-green-300">@TempData["Message"]</p>
+            </div>
+        }
+
+        <div class="text-center mb-14">
+            <div class="section-badge"><i class="fa-solid fa-crown"></i> <span data-i18n="sub.badge">Premium</span></div>
+            <h1 class="section-title mt-3"><span data-i18n="sub.title1">Unlock</span> <span class="gradient-text" data-i18n="sub.title2">AI-Powered Travel</span></h1>
+            <p class="text-gray-400 mt-4 max-w-xl mx-auto text-lg" data-i18n="sub.subtitle">Plan smarter, travel better. Upgrade to Premium and let AI do the heavy lifting.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
+            <!-- Free -->
+            <div class="pricing-card reveal-left">
+                <p class="text-gray-400 text-sm mb-1" data-i18n="sub.free_label">Free</p>
+                <h2 class="text-2xl font-bold text-white" data-i18n="sub.plan_free">Explorer</h2>
+                <div class="flex items-baseline gap-1 mt-4 mb-8">
+                    <span class="text-5xl font-black text-white">$0</span>
+                    <span class="text-gray-500" data-i18n="sub.month">/month</span>
+                </div>
+                <div class="space-y-2 mb-8">
+                    <div class="pricing-feature"><i class="fa-solid fa-check"></i> Browse all destinations</div>
+                    <div class="pricing-feature"><i class="fa-solid fa-check"></i> View hotels & flights</div>
+                    <div class="pricing-feature"><i class="fa-solid fa-check"></i> Discover activities</div>
+                    <div class="pricing-feature disabled"><i class="fa-solid fa-xmark"></i> AI trip planning</div>
+                    <div class="pricing-feature disabled"><i class="fa-solid fa-xmark"></i> AI chat assistant</div>
+                    <div class="pricing-feature disabled"><i class="fa-solid fa-xmark"></i> Exclusive member deals</div>
+                    <div class="pricing-feature disabled"><i class="fa-solid fa-xmark"></i> Priority support</div>
+                </div>
+                <div class="btn-outline w-full py-3 text-center rounded-xl cursor-default opacity-70" data-i18n="sub.current">Current Plan</div>
+            </div>
+
+            <!-- Premium -->
+            <div class="pricing-card featured reveal-right">
+                <span class="pricing-badge"><i class="fa-solid fa-crown mr-1"></i> <span data-i18n="sub.popular">Most Popular</span></span>
+                <p class="text-blue-300 text-sm mb-1" data-i18n="sub.premium_label">For serious travelers</p>
+                <h2 class="text-2xl font-bold text-white" data-i18n="sub.plan_premium">Premium</h2>
+                <div class="flex items-baseline gap-1 mt-4 mb-8">
+                    <span class="text-5xl font-black text-white">$19</span>
+                    <span class="text-gray-400" data-i18n="sub.month">/month</span>
+                </div>
+                <div class="space-y-2 mb-8">
+                    <div class="pricing-feature"><i class="fa-solid fa-check"></i> Everything in Free</div>
+                    <div class="pricing-feature"><i class="fa-solid fa-check"></i> AI-powered trip planning</div>
+                    <div class="pricing-feature"><i class="fa-solid fa-check"></i> AI chat assistant 24/7</div>
+                    <div class="pricing-feature"><i class="fa-solid fa-check"></i> Exclusive member deals</div>
+                    <div class="pricing-feature"><i class="fa-solid fa-check"></i> Priority support</div>
+                    <div class="pricing-feature"><i class="fa-solid fa-check"></i> Unlimited trip itineraries</div>
+                    <div class="pricing-feature"><i class="fa-solid fa-check"></i> Early access to new features</div>
+                </div>
+                <form asp-action="Upgrade" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="plan" value="Premium" />
+                    <button type="submit" class="btn-primary w-full py-3.5 justify-center text-base">
+                        <i class="fa-solid fa-crown"></i> <span data-i18n="sub.upgrade">Upgrade to Premium</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Features comparison -->
+        <div class="mt-20">
+            <h2 class="text-2xl font-bold text-white text-center mb-8" data-i18n="sub.why_title">Why Go <span class="gradient-text">Premium?</span></h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                @{
+                    var features = new[]
+                    {
+                        ("fa-wand-magic-sparkles", "#2563eb", "AI Trip Planning", "Tell our AI your budget, dates, and style. Get a complete day-by-day itinerary in seconds."),
+                        ("fa-robot", "#7c3aed", "24/7 AI Assistant", "Chat with your personal travel AI anytime. Get instant answers about visas, weather, local tips, and more."),
+                        ("fa-tag", "#d97706", "Member-Only Deals", "Access hotel rates and flight prices not available to the public. Save up to 40% on bookings."),
+                    };
+                }
+                @foreach (var (icon, color, title, desc) in features)
+                {
+                    <div class="glass-card p-6 text-center">
+                        <div class="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4" style="background: @(color)22; border: 1px solid @(color)44">
+                            <i class="fa-solid @icon text-2xl" style="color: @color"></i>
+                        </div>
+                        <h3 class="text-white font-bold text-lg mb-2">@title</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed">@desc</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

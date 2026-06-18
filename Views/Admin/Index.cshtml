@@ -1,0 +1,221 @@
+@{
+    ViewData["Title"] = "Admin Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using TravelAI.Models
+
+<div class="flex relative" style="min-height:calc(100vh - 4rem);">
+    @await Html.PartialAsync("_AdminSidebar")
+
+    <main class="flex-1 overflow-auto p-4 md:p-8 min-w-0">
+        <!-- Mobile header bar -->
+        <div class="flex items-center gap-3 mb-6 md:hidden">
+            <button onclick="openAdminSidebar()" class="p-2 rounded-lg bg-white/5 border border-white/10 text-gray-300 hover:bg-white/10 transition-colors flex-shrink-0">
+                <i class="fa-solid fa-bars text-sm"></i>
+            </button>
+            <div>
+                <h1 class="text-lg font-bold text-white leading-tight">Dashboard</h1>
+                <p class="text-gray-500 text-xs">TravelAI Admin</p>
+            </div>
+        </div>
+        <div class="hidden md:block mb-8">
+            <h1 class="text-2xl font-bold text-white">Dashboard</h1>
+            <p class="text-gray-400 text-sm mt-1">Welcome back. Here's what's happening with TravelAI.</p>
+        </div>
+
+        <!-- User Stats -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div class="admin-stat-card">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-xs text-gray-400 uppercase tracking-wide">Total Users</span>
+                    <div class="w-9 h-9 rounded-xl bg-blue-500/10 flex items-center justify-center flex-shrink-0">
+                        <i class="fa-solid fa-users text-blue-400 text-sm"></i>
+                    </div>
+                </div>
+                <p class="text-3xl font-bold text-white">@ViewBag.TotalUsers</p>
+                <p class="text-xs text-gray-500 mt-1">Registered accounts</p>
+            </div>
+            <div class="admin-stat-card">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-xs text-gray-400 uppercase tracking-wide">Premium</span>
+                    <div class="w-9 h-9 rounded-xl bg-yellow-500/10 flex items-center justify-center flex-shrink-0">
+                        <i class="fa-solid fa-crown text-yellow-400 text-sm"></i>
+                    </div>
+                </div>
+                <p class="text-3xl font-bold text-white">@ViewBag.PremiumUsers</p>
+                <p class="text-xs text-gray-500 mt-1">Paid subscribers</p>
+            </div>
+            <div class="admin-stat-card">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-xs text-gray-400 uppercase tracking-wide">New (30 days)</span>
+                    <div class="w-9 h-9 rounded-xl bg-green-500/10 flex items-center justify-center flex-shrink-0">
+                        <i class="fa-solid fa-user-plus text-green-400 text-sm"></i>
+                    </div>
+                </div>
+                <p class="text-3xl font-bold text-white">@ViewBag.NewUsersMonth</p>
+                <p class="text-xs text-gray-500 mt-1">New registrations</p>
+            </div>
+            <div class="admin-stat-card">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-xs text-gray-400 uppercase tracking-wide">Locked</span>
+                    <div class="w-9 h-9 rounded-xl bg-red-500/10 flex items-center justify-center flex-shrink-0">
+                        <i class="fa-solid fa-lock text-red-400 text-sm"></i>
+                    </div>
+                </div>
+                <p class="text-3xl font-bold text-white">@ViewBag.LockedUsers</p>
+                <p class="text-xs text-gray-500 mt-1">Locked out accounts</p>
+            </div>
+        </div>
+
+        <!-- Content Stats -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div class="admin-stat-card">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-xs text-gray-400 uppercase tracking-wide">Countries</span>
+                    <div class="w-9 h-9 rounded-xl bg-purple-500/10 flex items-center justify-center flex-shrink-0">
+                        <i class="fa-solid fa-globe text-purple-400 text-sm"></i>
+                    </div>
+                </div>
+                <p class="text-3xl font-bold text-white">@ViewBag.TotalCountries</p>
+                <p class="text-xs text-gray-500 mt-1">Destinations</p>
+            </div>
+            <div class="admin-stat-card">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-xs text-gray-400 uppercase tracking-wide">Hotels</span>
+                    <div class="w-9 h-9 rounded-xl bg-cyan-500/10 flex items-center justify-center flex-shrink-0">
+                        <i class="fa-solid fa-hotel text-cyan-400 text-sm"></i>
+                    </div>
+                </div>
+                <p class="text-3xl font-bold text-white">@ViewBag.TotalHotels</p>
+                <p class="text-xs text-gray-500 mt-1">Properties</p>
+            </div>
+            <div class="admin-stat-card">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-xs text-gray-400 uppercase tracking-wide">Flights</span>
+                    <div class="w-9 h-9 rounded-xl bg-sky-500/10 flex items-center justify-center flex-shrink-0">
+                        <i class="fa-solid fa-plane text-sky-400 text-sm"></i>
+                    </div>
+                </div>
+                <p class="text-3xl font-bold text-white">@ViewBag.TotalFlights</p>
+                <p class="text-xs text-gray-500 mt-1">Routes</p>
+            </div>
+            <div class="admin-stat-card">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-xs text-gray-400 uppercase tracking-wide">Activities</span>
+                    <div class="w-9 h-9 rounded-xl bg-orange-500/10 flex items-center justify-center flex-shrink-0">
+                        <i class="fa-solid fa-map-pin text-orange-400 text-sm"></i>
+                    </div>
+                </div>
+                <p class="text-3xl font-bold text-white">@ViewBag.TotalActivities</p>
+                <p class="text-xs text-gray-500 mt-1">Experiences</p>
+            </div>
+        </div>
+
+        <!-- Revenue Row -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+            <div class="admin-stat-card">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-xs text-gray-400 uppercase tracking-wide">Active Subscriptions</span>
+                    <div class="w-9 h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center flex-shrink-0">
+                        <i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i>
+                    </div>
+                </div>
+                <p class="text-3xl font-bold text-white">@ViewBag.ActiveSubs</p>
+                <p class="text-xs text-gray-500 mt-1">Paid & active plans</p>
+            </div>
+            <div class="admin-stat-card">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-xs text-gray-400 uppercase tracking-wide">Monthly Revenue</span>
+                    <div class="w-9 h-9 rounded-xl bg-yellow-500/10 flex items-center justify-center flex-shrink-0">
+                        <i class="fa-solid fa-dollar-sign text-yellow-400 text-sm"></i>
+                    </div>
+                </div>
+                <p class="text-3xl font-bold text-white">$@(((decimal)ViewBag.MonthlyRevenue).ToString("N0"))</p>
+                <p class="text-xs text-gray-500 mt-1">From paid plans</p>
+            </div>
+        </div>
+
+        <!-- Tables Row -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Recent Users -->
+            <div class="admin-stat-card !p-0 overflow-hidden">
+                <div class="flex items-center justify-between px-5 py-4 border-b border-white/5">
+                    <h3 class="text-sm font-semibold text-white">Recent Users</h3>
+                    <a href="/Admin/Users" class="text-xs text-blue-400 hover:text-blue-300 transition-colors">View all →</a>
+                </div>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th class="pl-5">User</th>
+                            <th>Plan</th>
+                            <th class="pr-5">Joined</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in (ViewBag.RecentUsers as List<AppUser>) ?? new List<AppUser>())
+                        {
+                            <tr>
+                                <td class="pl-5">
+                                    <div class="flex items-center gap-2.5">
+                                        <div class="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">@user.FullName.Substring(0, 1).ToUpper()</div>
+                                        <div class="min-w-0">
+                                            <p class="font-medium truncate">@user.FullName</p>
+                                            <p class="text-xs text-gray-500 truncate">@user.Email</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    @if (user.IsPremium)
+                                    {
+                                        <span class="admin-badge admin-badge-yellow">Premium</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="admin-badge admin-badge-gray">Free</span>
+                                    }
+                                </td>
+                                <td class="text-gray-400 text-xs pr-5">@user.CreatedAt.ToString("MMM dd, yyyy")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Recent Subscriptions -->
+            <div class="admin-stat-card !p-0 overflow-hidden">
+                <div class="flex items-center justify-between px-5 py-4 border-b border-white/5">
+                    <h3 class="text-sm font-semibold text-white">Recent Paid Subscriptions</h3>
+                    <a href="/Admin/Subscriptions" class="text-xs text-blue-400 hover:text-blue-300 transition-colors">View all →</a>
+                </div>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th class="pl-5">User</th>
+                            <th>Plan</th>
+                            <th>Price</th>
+                            <th class="pr-5">Started</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            var recentSubs = (ViewBag.RecentSubs as List<Subscription>) ?? new List<Subscription>();
+                        }
+                        @if (!recentSubs.Any())
+                        {
+                            <tr><td colspan="4" class="pl-5 text-gray-500 italic">No paid subscriptions yet.</td></tr>
+                        }
+                        @foreach (var sub in recentSubs)
+                        {
+                            <tr>
+                                <td class="pl-5 font-medium truncate max-w-[120px]">@sub.User?.FullName</td>
+                                <td><span class="admin-badge admin-badge-blue">@sub.Plan</span></td>
+                                <td class="text-emerald-400 font-medium">$@sub.Price</td>
+                                <td class="text-gray-400 text-xs pr-5">@sub.StartDate.ToString("MMM dd, yyyy")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
