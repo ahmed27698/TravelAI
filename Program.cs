@@ -12,11 +12,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.ConfigureKestrel(o => o.AddServerHeader = false);
 
 // ── Database ──────────────────────────────────────────────────────────────
-var connectionString =
-    Environment.GetEnvironmentVariable("DB_CONNECTION_STRING")
-    ?? builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<TravelAIDbContext>(options =>
-    options.UseNpgsql(connectionString));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // ── Authentication / Cookie hardening ────────────────────────────────────
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
